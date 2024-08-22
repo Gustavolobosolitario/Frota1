@@ -13,6 +13,16 @@ from datetime import datetime
 import random
 import string
 import warnings
+import subprocess
+
+# Define o comando que você deseja executar
+comando = ["streamlit", "run", "main.py", "--client.showErrorDetails=false"]
+
+# Executa o comando usando subprocess
+try:
+    subprocess.run(comando, check=True)
+except subprocess.CalledProcessError as e:
+    print(f"Erro ao executar o comando: {e}")
 
 
 print("st_aggrid importado com sucesso!")
