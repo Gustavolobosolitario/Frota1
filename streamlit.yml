@@ -28,4 +28,4 @@ jobs:
 
       - name: Run Streamlit App
         run: |
-          streamlit run main.py --client.showErrorDetails=false
+          streamlit run principal.py --client.showErrorDetails=false
