@@ -850,8 +850,8 @@ def atualizar_senha_com_token(token, nova_senha):
 # Página para redefinir a senha
 def resetar_senha():
     st.title('Redefinir Senha')
-    query_params = st.experimental_get_query_params
-    token = query_params = st.experimental_get_query_params().get('token', [None])[0]
+    query_params = st.query_params()
+    token = query_params = st.query_params().get('token', [None])[0]
     
     
 
@@ -988,7 +988,7 @@ def home_page():
 # Exibe a página inicial ou outras páginas
 # Detectar se o token está presente nos parâmetros da URL
 # Exibe a página inicial ou outras páginas
-params = st.experimental_get_query_params()
+params = st.st.query_params()
 
 
 if 'token' in params:
