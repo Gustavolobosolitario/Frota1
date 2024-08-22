@@ -13,16 +13,6 @@ from datetime import datetime
 import random
 import string
 import warnings
-import subprocess
-
-# Define o comando que você deseja executar
-comando = ["streamlit", "run", "main.py", "--client.showErrorDetails=false"]
-
-# Executa o comando usando subprocess
-try:
-    subprocess.run(comando, check=True)
-except subprocess.CalledProcessError as e:
-    print(f"Erro ao executar o comando: {e}")
 
 
 print("st_aggrid importado com sucesso!")
@@ -850,8 +840,8 @@ def atualizar_senha_com_token(token, nova_senha):
 # Página para redefinir a senha
 def resetar_senha():
     st.title('Redefinir Senha')
-    query_params = st.query_params()
-    token = query_params = st.query_params().get('token', [None])[0]
+    query_params = st.experimental_get_query_params
+    token = query_params = st.experimental_get_query_params().get('token', [None])[0]
     
     
 
@@ -988,7 +978,7 @@ def home_page():
 # Exibe a página inicial ou outras páginas
 # Detectar se o token está presente nos parâmetros da URL
 # Exibe a página inicial ou outras páginas
-params = st.st.query_params()
+params = st.experimental_get_query_params()
 
 
 if 'token' in params:
