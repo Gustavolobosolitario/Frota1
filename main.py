@@ -936,7 +936,7 @@ def home_page():
             descDestino = st.multiselect(label='Cidade', key='destino', options=[
                 'Rio Claro', 'Lençóis Paulista', 'São Carlos', 'Araras', 'Ribeirão Preto',
                 'Jaboticabal', 'Araraquara', 'Leme', 'Piracicaba', 'São Paulo',
-                'Campinas', 'Ibate', 'Porto Ferreira'
+                'Campinas', 'Ibate', 'Porto Ferreira'João Pessoa'
             ])
 
             hoje = datetime.now().date()
