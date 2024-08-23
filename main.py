@@ -58,6 +58,20 @@ def recuperar_senha(email):
     enviar_email_recovery(email, link)
     
     
+def recuperar_senha(email):
+    token = gerar_token_tamanho_aleatorio()
+    salvar_token_no_banco(email, token)
+    
+    # Verifica se está rodando no Streamlit Cloud ou localmente
+    if 'localhost' in st.request.host:
+        link = f'http://localhost:8501/?token={token}'
+    else:
+        link = f'https://<yhttps://frota1/>.streamlit.app/?token={token}'  # Altere <your-app-domain> para o domínio do Streamlit Cloud
+
+    enviar_email_recovery(email, link)
+
+    
+    
     
 def resetar_senha():
     st.title('Redefinir Senha')
