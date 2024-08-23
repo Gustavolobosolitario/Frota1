@@ -14,6 +14,9 @@ import random
 import string
 import warnings
 
+# Conectar ao banco de dados SQLite
+conn = sqlite3.connect('reservas.db')
+cursor = conn.cursor()
 
 print("st_aggrid importado com sucesso!")
 
