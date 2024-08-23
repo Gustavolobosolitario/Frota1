@@ -892,41 +892,39 @@ def home_page():
             st.session_state.clear()
             st.experimental_get_query_params(pagina='home')
 
-        with st.container():
+        with st.container(border=True):
             st.title('Reserva')
             col1, col2 = st.columns(2)
 
             # Variáveis de controle para confirmação de datas de final de semana
             if 'confirmar_proceder_retirada' not in st.session_state:
-                st.session_state.confirmar_proceder_retirada = False  # Falso se não for final de semana
+                st.session_state.confirmar_proceder_retirada = False
             if 'confirmar_proceder_devolucao' not in st.session_state:
-                st.session_state.confirmar_proceder_devolucao = False  # Falso se não for final de semana
+                st.session_state.confirmar_proceder_devolucao = False
 
             with col1:
                 dtRetirada = st.date_input(label='Data de Retirada', key='dtRetirada', value=datetime.now(), format='DD/MM/YYYY')
                 hrRetirada = st.time_input(label='Hora de Retirada', key='hrRetirada', value=time(9, 0))
 
                 # Verificar se a data de retirada é no final de semana
-                if dtRetirada.weekday() >= 5:  # 5 para sábado e 6 para domingo
-                    if not st.session_state.confirmar_proceder_retirada:
-                        st.warning("A data de retirada é um final de semana. Deseja continuar?")
-                        if st.button("Confirmar Retirada", key="confirmar_retirada"):
-                            st.session_state.confirmar_proceder_retirada = True  # Usuário confirmou a data
+                if dtRetirada.weekday() >= 5 and not st.session_state.confirmar_proceder_retirada:
+                    st.warning("A data de retirada é um final de semana. Deseja continuar?")
+                    if st.button("Confirmar Retirada", key="confirmar_retirada"):
+                        st.session_state.confirmar_proceder_retirada = True  # Usuário confirmou a data
                 else:
-                    st.session_state.confirmar_proceder_retirada = True  # Se for dia útil, não precisa de confirmação
+                    st.session_state.confirmar_proceder_retirada = True  # Se não for fim de semana, não precisa de confirmação
 
             with col2:
                 dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao', value=datetime.now(), format='DD/MM/YYYY')
                 hrDevolucao = st.time_input(label='Hora de Devolução', key='hrDevolucao', value=time(9, 0))
 
                 # Verificar se a data de devolução é no final de semana
-                if dtDevolucao.weekday() >= 5:  # 5 para sábado e 6 para domingo
-                    if not st.session_state.confirmar_proceder_devolucao:
-                        st.warning("A data de devolução é um final de semana. Deseja continuar?")
-                        if st.button("Confirmar Devolução", key="confirmar_devolucao"):
-                            st.session_state.confirmar_proceder_devolucao = True  # Usuário confirmou a data
+                if dtDevolucao.weekday() >= 5 and not st.session_state.confirmar_proceder_devolucao:
+                    st.warning("A data de devolução é um final de semana. Deseja continuar?")
+                    if st.button("Confirmar Devolução", key="confirmar_devolucao"):
+                        st.session_state.confirmar_proceder_devolucao = True  # Usuário confirmou a data
                 else:
-                    st.session_state.confirmar_proceder_devolucao = True  # Se for dia útil, não precisa de confirmação
+                    st.session_state.confirmar_proceder_devolucao = True  # Se não for fim de semana, não precisa de confirmação
 
             nome_completo = st.session_state.nome_completo
             email_usuario = st.session_state.usuario_logado
