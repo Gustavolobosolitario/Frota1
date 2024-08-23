@@ -890,7 +890,7 @@ def home_page():
             st.session_state.clear()
             st.experimental_get_query_params(pagina='home')
 
-        with st.container(borde=True):
+        with st.container(border=True):
             st.title('Reserva')
             col1, col2 = st.columns(2)
 
