@@ -54,7 +54,7 @@ if 'nome_completo' not in st.session_state:
 def recuperar_senha(email):
     token = gerar_token_tamanho_aleatorio()
     salvar_token_no_banco(email, token)
-    link = f'https://<yhttps://frota1/>.streamlit.app/?token={token}'  # Altere <your-app-domain> para o domínio do Streamlit Cloud
+    link = f'https://<https://frota1>.streamlit.app/?token={token}'  # Altere <your-app-domain> para o domínio do Streamlit Cloud
     enviar_email_recovery(email, link)
     
     
@@ -217,7 +217,7 @@ def resetar_senha():
 def recuperar_senha(email):
     token = gerar_token_tamanho_aleatorio()
     salvar_token_no_banco(email, token)
-    link = f'http://localhost:8501/?token={token}'
+    link = f'https://<https://frota1>.streamlit.app/?token={token}'  # Altere <your-app-domain> para o domínio do Streamlit Cloud
     enviar_email_recovery(email, link)
 
 
@@ -814,7 +814,7 @@ def limpar_banco_dados():
 def recuperar_senha(email):
     token = gerar_token_tamanho_aleatorio()
     salvar_token_no_banco(email, token)
-    link = f'http://localhost:8501/?token={token}'
+    link = f'https://<https://frota1>.streamlit.app/?token={token}'  # Altere <your-app-domain> para o domínio do Streamlit Cloud
     enviar_email_recovery(email, link)
 
 
