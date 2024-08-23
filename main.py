@@ -913,8 +913,6 @@ def home_page():
                     st.warning("A data de retirada é um final de semana. Deseja continuar?")
                     if st.button("Confirmar Retirada", key="confirmar_retirada"):
                         st.session_state.retirada_confirmada = True  # Usuário confirmou a data
-                else:
-                    st.session_state.retirada_confirmada = True  # Se não for fim de semana, não precisa de confirmação
 
             with col2:
                 dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao', value=datetime.now(), format='DD/MM/YYYY')
@@ -925,8 +923,6 @@ def home_page():
                     st.warning("A data de devolução é um final de semana. Deseja continuar?")
                     if st.button("Confirmar Devolução", key="confirmar_devolucao"):
                         st.session_state.devolucao_confirmada = True  # Usuário confirmou a data
-                else:
-                    st.session_state.devolucao_confirmada = True  # Se não for fim de semana, não precisa de confirmação
 
             nome_completo = st.session_state.nome_completo
             email_usuario = st.session_state.usuario_logado
@@ -941,23 +937,26 @@ def home_page():
 
             hoje = datetime.now().date()
 
-            # Se tudo for confirmado, pode cadastrar a reserva
+            # Verificar se os campos estão preenchidos e as confirmações foram feitas
             if not (dtRetirada and hrRetirada and dtDevolucao and hrDevolucao and descVeiculo and descDestino):
                 btnCadastrar = st.button('Cadastrar', key='botao_cadastrar', disabled=True)
             else:
                 btnCadastrar = st.button('Cadastrar', key='botao_cadastrar', disabled=False)
-                if not st.session_state.retirada_confirmada or not st.session_state.devolucao_confirmada:
-                    st.error('Por favor, confirme as datas selecionadas.')
-                elif dtRetirada < hoje or dtDevolucao < hoje:
-                    st.error('Não é possível fazer uma reserva para uma data passada.')
-                elif dtDevolucao < dtRetirada:
-                    st.error('A data de devolução não pode ser anterior à data de retirada.')
-                else:
-                    adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, descVeiculo, descDestino)
-                    st.success('Reserva realizada com sucesso!')
-                    # Resetar confirmações
-                    st.session_state.retirada_confirmada = False
-                    st.session_state.devolucao_confirmada = False
+                
+                # Lógica para processar o cadastro manualmente
+                if btnCadastrar:
+                    if not st.session_state.retirada_confirmada or not st.session_state.devolucao_confirmada:
+                        st.error('Por favor, confirme as datas selecionadas.')
+                    elif dtRetirada < hoje or dtDevolucao < hoje:
+                        st.error('Não é possível fazer uma reserva para uma data passada.')
+                    elif dtDevolucao < dtRetirada:
+                        st.error('A data de devolução não pode ser anterior à data de retirada.')
+                    else:
+                        adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, descVeiculo, descDestino)
+                        st.success('Reserva realizada com sucesso!')
+                        # Resetar confirmações
+                        st.session_state.retirada_confirmada = False
+                        st.session_state.devolucao_confirmada = False
 
         with st.form(key='buscar_reserva'):
             st.subheader('Consultar Reservas')
