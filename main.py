@@ -892,7 +892,7 @@ def home_page():
             st.session_state.clear()
             st.experimental_get_query_params(pagina='home')
 
-        with st.container(border=True):
+        with st.container():
             st.title('Reserva')
             col1, col2 = st.columns(2)
 
@@ -934,7 +934,7 @@ def home_page():
                 'SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV'
             ])
             descDestino = st.multiselect(label='Cidade', key='destino', options=[
-                "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
+    "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
     "Agudos", "Alambari", "Alfredo Marcondes", "Altair", "Altinópolis", "Alto Alegre", "Alumínio", "Álvares Florence",
     "Álvares Machado", "Álvaro de Carvalho", "Alvinlândia", "Americana", "Américo Brasiliense", "Américo de Campos",
     "Amparo", "Analândia", "Andradina", "Angatuba", "Anhembi", "Anhumas", "Aparecida", "Aparecida d'Oeste", "Apiaí",
@@ -1012,8 +1012,7 @@ def home_page():
     "Turiúba", "Turmalina", "Ubarana", "Ubatuba", "Ubirajara", "Uchoa", "União Paulista", "Urânia", "Uru", "Urupês", "Valentim Gentil",
     "Valinhos", "Valparaíso", "Vargem", "Vargem Grande do Sul", "Vargem Grande Paulista", "Várzea Paulista", "Vera Cruz", "Vinhedo",
     "Viradouro", "Vista Alegre do Alto", "Vitória Brasil", "Votorantim", "Votuporanga", "Zacarias"
-
-            ])
+])
 
             hoje = datetime.now().date()
 
@@ -1053,7 +1052,7 @@ def home_page():
 
             with col4:
                 cidade = st.multiselect(label='Cidade', key='cidade_filtro', options=[
-                "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
+    "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
     "Agudos", "Alambari", "Alfredo Marcondes", "Altair", "Altinópolis", "Alto Alegre", "Alumínio", "Álvares Florence",
     "Álvares Machado", "Álvaro de Carvalho", "Alvinlândia", "Americana", "Américo Brasiliense", "Américo de Campos",
     "Amparo", "Analândia", "Andradina", "Angatuba", "Anhembi", "Anhumas", "Aparecida", "Aparecida d'Oeste", "Apiaí",
@@ -1131,8 +1130,7 @@ def home_page():
     "Turiúba", "Turmalina", "Ubarana", "Ubatuba", "Ubirajara", "Uchoa", "União Paulista", "Urânia", "Uru", "Urupês", "Valentim Gentil",
     "Valinhos", "Valparaíso", "Vargem", "Vargem Grande do Sul", "Vargem Grande Paulista", "Várzea Paulista", "Vera Cruz", "Vinhedo",
     "Viradouro", "Vista Alegre do Alto", "Vitória Brasil", "Votorantim", "Votuporanga", "Zacarias"
-
-            ])
+])
 
             buscar_reserva = st.form_submit_button(label='Buscar Reserva')
 
