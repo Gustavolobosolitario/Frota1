@@ -14,6 +14,7 @@ import random
 import string
 import warnings
 
+
 # Conectar ao banco de dados SQLite
 conn = sqlite3.connect('reservas.db')
 cursor = conn.cursor()
@@ -501,9 +502,12 @@ def arredondar_para_intervalo(time_obj, intervalo_mins=30):
     minutos = arredondado % 60
     return time(horas, minutos)
 
+
+
 # Função para adicionar uma nova reserva
 def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
     try:
+        st.write("Preparando para salvar a reserva...")
         destino_str = ', '.join(destinos) if destinos else ''
         with sqlite3.connect('reservas.db') as conn:
             cursor = conn.cursor()
@@ -516,8 +520,13 @@ def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, d
                             carro, destino_str, 'Agendado'))
             conn.commit()
         st.success("Reserva realizada com sucesso!")
+        st.write("Reserva salva no banco de dados.")
     except sqlite3.Error as e:
         st.error(f"Erro ao adicionar reserva: {e}")
+    except Exception as e:
+        st.error(f"Erro inesperado: {e}")
+
+
 
 
 
