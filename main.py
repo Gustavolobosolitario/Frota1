@@ -914,15 +914,19 @@ def home_page():
                     # Se for durante a semana, a data é automaticamente confirmada
                     st.session_state.retirada_confirmada = True
 
-            with col2:
+               with col2:
                 dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao', value=datetime.now(), format='DD/MM/YYYY')
                 hrDevolucao = st.time_input(label='Hora de Devolução', key='hrDevolucao', value=time(9, 0))
-
+        
                 # Verificar se a data de devolução é no final de semana
-                if dtDevolucao.weekday() >= 5 and st.session_state.confirmar_proceder_devolucao:
-                    st.warning("A data de devolução é um final de semana. Deseja continuar?")
-                    if st.button("Confirmar Devolução", key="confirmar_devolucao"):
-                        st.session_state.confirmar_proceder_devolucao = False  # Usuário confirmou a data
+                if dtDevolucao.weekday() >= 5:
+                    if not st.session_state.devolucao_confirmada:
+                        st.warning("A data de devolução é um final de semana. Deseja continuar?")
+                        if st.button("Confirmar Devolução", key="confirmar_devolucao"):
+                            st.session_state.devolucao_confirmada = True  # Usuário confirmou a data
+                else:
+                    # Se for durante a semana, a data é automaticamente confirmada
+                    st.session_state.devolucao_confirmada = True
 
             nome_completo = st.session_state.nome_completo
             email_usuario = st.session_state.usuario_logado
