@@ -502,24 +502,20 @@ def arredondar_para_intervalo(time_obj, intervalo_mins=30):
 def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
     try:
         destino_str = ', '.join(destinos) if destinos else ''
-        if veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
-            with sqlite3.connect('reservas.db') as conn:
-                cursor = conn.cursor()
-                cursor.execute('''INSERT INTO reservas 
-                                  (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
-                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                               (st.session_state.nome_completo, st.session_state.usuario_logado, 
-                                dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
-                                dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
-                                carro, destino_str, 'Agendado'))
-                conn.commit()
-            enviar_notificacao_reserva(st.session_state.nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destino_str)
-            return True
-        else:
-            return False
+        with sqlite3.connect('reservas.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('''INSERT INTO reservas 
+                              (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                           (st.session_state.nome_completo, st.session_state.usuario_logado, 
+                            dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
+                            dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
+                            carro, destino_str, 'Agendado'))
+            conn.commit()
+        st.success("Reserva realizada com sucesso!")
     except sqlite3.Error as e:
-        print(f"Erro ao adicionar reserva: {e}")
-        return False
+        st.error(f"Erro ao adicionar reserva: {e}")
+
 
 
 
