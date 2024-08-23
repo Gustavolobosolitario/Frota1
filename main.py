@@ -913,6 +913,9 @@ def home_page():
                     st.warning("A data de retirada é um final de semana. Deseja continuar?")
                     if st.button("Confirmar Retirada", key="confirmar_retirada"):
                         st.session_state.confirmar_proceder_retirada = False  # Usuário confirmou a data
+                        st.session_state.retirada_confirmada = True  # Usuário confirmou a data
+                elif dtRetirada.weekday() < 5:
+                    st.session_state.retirada_confirmada = True  # Se for durante a semana, já é confirmado automaticamente
 
             with col2:
                 dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao', value=datetime.now(), format='DD/MM/YYYY')
