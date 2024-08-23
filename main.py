@@ -675,33 +675,33 @@ def atualizar_status_reserva(selected_id):
 
 
 
+
+
 # Função para adicionar uma nova reserva
 def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
     try:
-        if not veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
-            st.error("O veículo já está reservado para o período selecionado.")
-            return
-        
         destino_str = ', '.join(destinos) if destinos else ''
-        with sqlite3.connect('reservas.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute('''INSERT INTO reservas 
-                              (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                           (st.session_state.nome_completo, st.session_state.usuario_logado, 
-                            dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
-                            dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
-                            carro, destino_str, 'Agendado'))
-            conn.commit()  # Confirma a transação no banco de dados
-            st.success("Reserva realizada com sucesso!")  # Mensagem de sucesso exibida após a confirmação
-            
-            # Enviar a notificação apenas se a reserva for concluída com sucesso
+        if veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
+            with sqlite3.connect('reservas.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute('''INSERT INTO reservas 
+                                  (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
+                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                               (st.session_state.nome_completo, st.session_state.usuario_logado, 
+                                dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
+                                dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
+                                carro, destino_str, 'Agendado'))
+                conn.commit()
             enviar_notificacao_reserva(st.session_state.nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destino_str)
-            
+            st.success("Reserva realizada com sucesso!")
+        else:
+            st.error("O veículo já está reservado para o período selecionado.")
     except sqlite3.Error as e:
         st.error(f"Erro ao adicionar reserva: {e}")
     except Exception as e:
         st.error(f"Erro inesperado: {e}")
+
+
 
 
 
@@ -879,6 +879,7 @@ def resetar_senha():
 
 
 
+
 def home_page():
     criar_tabelas()
     
@@ -895,13 +896,31 @@ def home_page():
             st.title('Reserva')
             col1, col2 = st.columns(2)
 
+            # Variáveis de controle para confirmação de datas de final de semana
+            if 'confirmar_proceder_retirada' not in st.session_state:
+                st.session_state.confirmar_proceder_retirada = True
+            if 'confirmar_proceder_devolucao' not in st.session_state:
+                st.session_state.confirmar_proceder_devolucao = True
+
             with col1:
                 dtRetirada = st.date_input(label='Data de Retirada', key='dtRetirada', value=datetime.now(), format='DD/MM/YYYY')
                 hrRetirada = st.time_input(label='Hora de Retirada', key='hrRetirada', value=time(9, 0))
 
+                # Verificar se a data de retirada é no final de semana
+                if dtRetirada.weekday() >= 5 and st.session_state.confirmar_proceder_retirada:
+                    st.warning("A data de retirada é um final de semana. Deseja continuar?")
+                    if st.button("Confirmar Retirada", key="confirmar_retirada"):
+                        st.session_state.confirmar_proceder_retirada = False  # Usuário confirmou a data
+
             with col2:
                 dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao', value=datetime.now(), format='DD/MM/YYYY')
                 hrDevolucao = st.time_input(label='Hora de Devolução', key='hrDevolucao', value=time(9, 0))
+
+                # Verificar se a data de devolução é no final de semana
+                if dtDevolucao.weekday() >= 5 and st.session_state.confirmar_proceder_devolucao:
+                    st.warning("A data de devolução é um final de semana. Deseja continuar?")
+                    if st.button("Confirmar Devolução", key="confirmar_devolucao"):
+                        st.session_state.confirmar_proceder_devolucao = False  # Usuário confirmou a data
 
             nome_completo = st.session_state.nome_completo
             email_usuario = st.session_state.usuario_logado
@@ -913,21 +932,28 @@ def home_page():
                 'Jaboticabal', 'Araraquara', 'Leme', 'Piracicaba', 'São Paulo',
                 'Campinas', 'Ibate', 'Porto Ferreira'
             ])
-            
+
             hoje = datetime.now().date()
+
+            # Se tudo for confirmado, pode cadastrar a reserva
             if not (dtRetirada and hrRetirada and dtDevolucao and hrDevolucao and descVeiculo and descDestino):
                 btnCadastrar = st.button('Cadastrar', key='botao_cadastrar', disabled=True)
             else:
                 btnCadastrar = st.button('Cadastrar', key='botao_cadastrar', disabled=False)
                 if btnCadastrar:
-                    if dtRetirada < hoje or dtDevolucao < hoje:
+                    if st.session_state.confirmar_proceder_retirada or st.session_state.confirmar_proceder_devolucao:
+                        st.error('Por favor, confirme as datas selecionadas.')
+                    elif dtRetirada < hoje or dtDevolucao < hoje:
                         st.error('Não é possível fazer uma reserva para uma data passada.')
                     elif dtDevolucao < dtRetirada:
                         st.error('A data de devolução não pode ser anterior à data de retirada.')
                     else:
                         adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, descVeiculo, descDestino)
                         st.success('Reserva realizada com sucesso!')
-                                     
+                        # Resetar confirmações
+                        st.session_state.confirmar_proceder_retirada = True
+                        st.session_state.confirmar_proceder_devolucao = True
+
         with st.form(key='buscar_reserva'):
             st.subheader('Consultar Reservas')
             col1, col2 = st.columns(2)
@@ -964,9 +990,6 @@ def home_page():
     else:
         menu_autenticacao = st.sidebar.radio('Selecione uma opção', ['Login', 'Cadastro', 'Recuperar Senha'])
 
-
-
-                
         if menu_autenticacao == 'Login':
             login()
         elif menu_autenticacao == 'Cadastro':
@@ -980,10 +1003,7 @@ def home_page():
 
 
 # Exibe a página inicial ou outras páginas
-# Detectar se o token está presente nos parâmetros da URL
-# Exibe a página inicial ou outras páginas
 params = st.experimental_get_query_params()
-
 
 if 'token' in params:
     resetar_senha()
