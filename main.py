@@ -898,35 +898,29 @@ def home_page():
 
             # Variáveis de controle para confirmação de datas de final de semana
             if 'confirmar_proceder_retirada' not in st.session_state:
-                st.session_state.confirmar_proceder_retirada = False  # Falso se não for final de semana
+                st.session_state.confirmar_proceder_retirada = True
             if 'confirmar_proceder_devolucao' not in st.session_state:
-                st.session_state.confirmar_proceder_devolucao = False  # Falso se não for final de semana
+                st.session_state.confirmar_proceder_devolucao = True
 
             with col1:
                 dtRetirada = st.date_input(label='Data de Retirada', key='dtRetirada', value=datetime.now(), format='DD/MM/YYYY')
                 hrRetirada = st.time_input(label='Hora de Retirada', key='hrRetirada', value=time(9, 0))
 
                 # Verificar se a data de retirada é no final de semana
-                if dtRetirada.weekday() >= 5:  # 5 para sábado e 6 para domingo
-                    if not st.session_state.confirmar_proceder_retirada:
-                        st.warning("A data de retirada é um final de semana. Deseja continuar?")
-                        if st.button("Confirmar Retirada", key="confirmar_retirada"):
-                            st.session_state.confirmar_proceder_retirada = True  # Usuário confirmou a data
-                else:
-                    st.session_state.confirmar_proceder_retirada = True  # Se for dia útil, não precisa de confirmação
+                if dtRetirada.weekday() >= 5 and st.session_state.confirmar_proceder_retirada:
+                    st.warning("A data de retirada é um final de semana. Deseja continuar?")
+                    if st.button("Confirmar Retirada", key="confirmar_retirada"):
+                        st.session_state.confirmar_proceder_retirada = False  # Usuário confirmou a data
 
             with col2:
                 dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao', value=datetime.now(), format='DD/MM/YYYY')
                 hrDevolucao = st.time_input(label='Hora de Devolução', key='hrDevolucao', value=time(9, 0))
 
                 # Verificar se a data de devolução é no final de semana
-                if dtDevolucao.weekday() >= 5:  # 5 para sábado e 6 para domingo
-                    if not st.session_state.confirmar_proceder_devolucao:
-                        st.warning("A data de devolução é um final de semana. Deseja continuar?")
-                        if st.button("Confirmar Devolução", key="confirmar_devolucao"):
-                            st.session_state.confirmar_proceder_devolucao = True  # Usuário confirmou a data
-                else:
-                    st.session_state.confirmar_proceder_devolucao = True  # Se for dia útil, não precisa de confirmação
+                if dtDevolucao.weekday() >= 5 and st.session_state.confirmar_proceder_devolucao:
+                    st.warning("A data de devolução é um final de semana. Deseja continuar?")
+                    if st.button("Confirmar Devolução", key="confirmar_devolucao"):
+                        st.session_state.confirmar_proceder_devolucao = False  # Usuário confirmou a data
 
             nome_completo = st.session_state.nome_completo
             email_usuario = st.session_state.usuario_logado
@@ -947,7 +941,7 @@ def home_page():
             else:
                 btnCadastrar = st.button('Cadastrar', key='botao_cadastrar', disabled=False)
                 if btnCadastrar:
-                    if not st.session_state.confirmar_proceder_retirada or not st.session_state.confirmar_proceder_devolucao:
+                    if st.session_state.confirmar_proceder_retirada or st.session_state.confirmar_proceder_devolucao:
                         st.error('Por favor, confirme as datas selecionadas.')
                     elif dtRetirada < hoje or dtDevolucao < hoje:
                         st.error('Não é possível fazer uma reserva para uma data passada.')
@@ -957,8 +951,8 @@ def home_page():
                         adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, descVeiculo, descDestino)
                         st.success('Reserva realizada com sucesso!')
                         # Resetar confirmações
-                        st.session_state.confirmar_proceder_retirada = False
-                        st.session_state.confirmar_proceder_devolucao = False
+                        st.session_state.confirmar_proceder_retirada = True
+                        st.session_state.confirmar_proceder_devolucao = True
 
         with st.form(key='buscar_reserva'):
             st.subheader('Consultar Reservas')
@@ -1024,4 +1018,5 @@ else:
             st.query_params(pagina='home')
     else:
         home_page()
+
 
