@@ -365,8 +365,8 @@ def criar_tabelas():
                             nome_completo TEXT,
                             email_usuario TEXT,
                             dtRetirada DATE,
-                            dtDevolucao DATE,
                             hrRetirada TEXT,
+                            dtDevolucao DATE,
                             hrDevolucao TEXT,
                             carro TEXT,
                             cidade TEXT,
@@ -515,6 +515,7 @@ def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, d
         st.success("Reserva realizada com sucesso!")
     except sqlite3.Error as e:
         st.error(f"Erro ao adicionar reserva: {e}")
+
 
 
 
