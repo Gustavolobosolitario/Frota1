@@ -899,10 +899,7 @@ def home_page():
                 st.session_state.confirmar_proceder_retirada = True
             if 'confirmar_proceder_devolucao' not in st.session_state:
                 st.session_state.confirmar_proceder_devolucao = True
-            if 'retirada_confirmada' not in st.session_state:
-                st.session_state.retirada_confirmada = False
-            if 'devolucao_confirmada' not in st.session_state:
-                st.session_state.devolucao_confirmada = False
+            
 
             with col1:
                 dtRetirada = st.date_input(label='Data de Retirada', key='dtRetirada', value=datetime.now(), format='DD/MM/YYYY')
