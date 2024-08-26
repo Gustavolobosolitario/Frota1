@@ -281,12 +281,13 @@ def enviar_notificacao_reserva(email_usuario, dtRetirada, hrRetirada, dtDevoluca
 
 
 # Função para enviar notificação de cancelamento por email
+# Função para enviar notificação de cancelamento por email
 def enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
     servidor_smtp = 'smtp.office365.com'
     porta = 587
     remetente = 'ti@vilaurbe.com.br'
     senha = 'Vilaurbe2024!'
-    destinatario = 'analytics@vilaurbe.com.br'  # Notificação enviada ao usuário que fez a reserva
+    destinatario = email_usuario  # Notificação enviada ao usuário que fez a reserva
 
     # Formatação das datas
     dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
@@ -679,6 +680,13 @@ def atualizar_status_reserva(selected_id):
                     cursor.execute("UPDATE reservas SET status = 'Cancelado' WHERE id = ?", (selected_id,))
                     conn.commit()
                     st.success('Reserva cancelada com sucesso!')
+                    
+                    # Enviar notificação de cancelamento
+                    cursor.execute('SELECT dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade FROM reservas WHERE id = ?', (selected_id,))
+                    detalhes_reserva = cursor.fetchone()
+                    if detalhes_reserva:
+                        dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos = detalhes_reserva
+                        enviar_notificacao_cancelamento(email_reserva, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos)
                     
                     # Marcar para recarregar a tabela
                     st.session_state.atualizar_tabela = True
