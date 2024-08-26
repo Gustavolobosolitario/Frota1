@@ -58,7 +58,7 @@ if 'nome_completo' not in st.session_state:
 def recuperar_senha(email):
     token = gerar_token_tamanho_aleatorio()
     salvar_token_no_banco(email, token)
-    link = f'https://frota1.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
+    link = f'ttps://frotavilaurbe.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
     enviar_email_recovery(email, link)
     
     
@@ -221,7 +221,7 @@ def resetar_senha():
 def recuperar_senha(email):
     token = gerar_token_tamanho_aleatorio()
     salvar_token_no_banco(email, token)
-    link = f'https://frota1.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
+    link = f'ttps://frotavilaurbe.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
     enviar_email_recovery(email, link)
 
 
