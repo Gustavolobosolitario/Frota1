@@ -1032,41 +1032,7 @@ def resetar_senha():
 
 
 
-# Função para consultar reservas com filtros e atualizar automaticamente se não houver filtros
-def consultar_reservas():
-    st.subheader('Consultar Reservas')
-    
-    # Formulário de filtros
-    with st.form(key='filtros'):
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            dtRetirada = st.date_input('Data de Retirada', value=None, key='dtRetirada')
-        with col2:
-            dtDevolucao = st.date_input('Data de Devolução', value=None, key='dtDevolucao')
-        with col3:
-            carro = st.text_input('Carro', value='', key='carro')
-        with col4:
-            cidade = st.text_input('Cidade', value='', key='cidade')
 
-        filtro_aplicado = st.form_submit_button('Buscar')
-
-    # Se nenhum filtro for aplicado, fazer a atualização automática
-    if not filtro_aplicado and not dtRetirada and not dtDevolucao and not carro and not cidade:
-        # Atualizar automaticamente a área de reservas se nenhum filtro foi aplicado
-        st.session_state.atualizar_tabela = True
-
-    # Filtrar reservas se houver filtros aplicados
-    if filtro_aplicado or st.session_state.atualizar_tabela:
-        df_filtrada = buscar_reservas_filtros(dtRetirada, dtDevolucao, carro, cidade)
-        if not df_filtrada.empty:
-            st.write(df_filtrada)
-        else:
-            st.error('Nenhuma reserva encontrada.')
-
-        # Se a tabela foi atualizada automaticamente, resetar o estado
-        st.session_state.atualizar_tabela = False
-    else:
-        exibir_reservas_interativas()
 
 
 
