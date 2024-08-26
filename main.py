@@ -819,8 +819,6 @@ def exibir_exportar_reservas(df_reservas):
         if st.session_state.usuario_logado == usuario_autorizado:
             st.write('### Exportar todas as reservas:')
             exportar_reservas_para_csv(df_reservas)
-        else:
-            st.write('Você não tem permissão para exportar as reservas.')
     else:
         st.write("Nenhum usuário logado.")
 
