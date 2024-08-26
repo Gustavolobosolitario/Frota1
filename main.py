@@ -700,12 +700,11 @@ def exportar_reservas_para_csv(df_reservas):
 
 # Função para exibir o botão de exportação apenas para o usuário autorizado
 def exibir_exportar_reservas(df_reservas):
-    # Definir o usuário autorizado
-    usuario_autorizado = 'analytics@vilaurbe.com.br'  # Substitua pelo e-mail do usuário autorizado
+    
     
     # Verificar se o usuário logado é o autorizado
     if 'usuario_logado' in st.session_state:
-        if st.session_state.usuario_logado == usuario_autorizado:
+        
             st.write('### Exportar todas as reservas:')
             exportar_reservas_para_csv(df_reservas)
         else:
