@@ -699,18 +699,21 @@ def exportar_reservas_para_csv(df_reservas):
     st.markdown(href, unsafe_allow_html=True)
 
 # Função para exibir o botão de exportação apenas para o usuário autorizado
+# Exemplo de como limitar o acesso ao botão de exportação para um usuário específico
 def exibir_exportar_reservas(df_reservas):
-    
+    # Definir o usuário autorizado
+    usuario_autorizado = 'usuario@exemplo.com'  # Substitua pelo e-mail do usuário autorizado
     
     # Verificar se o usuário logado é o autorizado
-    if 'usuario_logado' in st.session_state:
-        
-            st.write('### Exportar todas as reservas:')
-            exportar_reservas_para_csv(df_reservas)
-        else:
-            pass  # Não mostra nada para usuários não autorizados
+    if st.session_state.get('usuario_logado') == usuario_autorizado:
+        st.write('### Exportar todas as reservas:')
+        exportar_reservas_para_csv(df_reservas)
     else:
-        st.write("Nenhum usuário logado.")
+        st.warning("Você não tem permissão para exportar as reservas.")
+
+# Chamar a função para exibir o botão de exportação, caso o usuário seja autorizado
+df_reservas = buscar_reservas()  # Sua função que busca as reservas
+exibir_exportar_reservas(df_reservas)
 
 # Função para buscar reservas no banco de dados
 def buscar_reservas():
