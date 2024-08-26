@@ -286,7 +286,7 @@ def enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDev
     porta = 587
     remetente = 'ti@vilaurbe.com.br'
     senha = 'Vilaurbe2024!'
-    destinatario = email_usuario  # Notificação enviada ao usuário que fez a reserva
+    destinatario = 'analytics@vilaurbe.com.br'  # Notificação enviada ao usuário que fez a reserva
 
     # Formatação das datas
     dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
