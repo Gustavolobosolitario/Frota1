@@ -700,21 +700,20 @@ def cancelar_reserva(selected_id):
         if reserva:
             email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos = reserva
 
+            # Verificar se o usuário logado é o mesmo que fez a reserva
             if email_usuario == st.session_state.usuario_logado:
+                
+                # Atualizar o status para "Cancelado"
+                cursor.execute('UPDATE reservas SET status = "Cancelado" WHERE id = ?', (selected_id,))
+                conn.commit()
 
-            # Atualizar o status para "Cancelado"
-            cursor.execute('UPDATE reservas SET status = "Cancelado" WHERE id = ?', (selected_id,))
-            conn.commit()
-
-            # Enviar notificação de cancelamento
-            enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos)
-            st.sucess('Reserva cancelada com sucesso! Notificação enviada.')
+                # Enviar notificação de cancelamento
+                enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos)
+                st.success('Reserva cancelada com sucesso! Notificação enviada.')
+            else:
+                st.error('Você não tem permissão para cancelar esta reserva.')
         else:
-            st.error('Você não tem permissão para cancelar esta reserva.')
-else:
-    st.error('Reserva não encontrada,')
-            return True
-        return False
+            st.error('Reserva não encontrada.')
             
 
 
