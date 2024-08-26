@@ -726,13 +726,15 @@ def buscar_reservas():
         st.error(f"Erro ao buscar reservas: {e}")
         return pd.DataFrame()  # Retorna DataFrame vazio se houver erro
 
-# Exibir reservas e botão de exportação apenas para o usuário autorizado
+# Definir o usuário logado (simulação)
+if 'usuario_logado' not in st.session_state:
+    st.session_state.usuario_logado = 'adm02@vilaurbe.com.br'  # Defina o usuário logado para teste
+
+# Buscar as reservas
 df_reservas = buscar_reservas()
 
-if not df_reservas.empty:
-    exibir_exportar_reservas(df_reservas)
-else:
-    st.warning('Nenhuma reserva disponível.')
+# Exibir o botão de exportação se o usuário for autorizado
+exibir_exportar_reservas(df_reservas)
 
 
 
