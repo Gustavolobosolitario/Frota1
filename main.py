@@ -699,21 +699,19 @@ def exportar_reservas_para_csv(df_reservas):
     st.markdown(href, unsafe_allow_html=True)
 
 # Função para exibir o botão de exportação apenas para o usuário autorizado
-# Exemplo de como limitar o acesso ao botão de exportação para um usuário específico
 def exibir_exportar_reservas(df_reservas):
     # Definir o usuário autorizado
-    usuario_autorizado = 'usuario@exemplo.com'  # Substitua pelo e-mail do usuário autorizado
+    usuario_autorizado = 'adm02@vilaurbe.com.br'  # Substitua pelo e-mail do usuário autorizado
     
     # Verificar se o usuário logado é o autorizado
-    if st.session_state.get('usuario_logado') == usuario_autorizado:
-        st.write('### Exportar todas as reservas:')
-        exportar_reservas_para_csv(df_reservas)
+    if 'usuario_logado' in st.session_state:
+        if st.session_state.usuario_logado == usuario_autorizado:
+            st.write('### Exportar todas as reservas:')
+            exportar_reservas_para_csv(df_reservas)
+        else:
+            st.write('Você não tem permissão para exportar as reservas.')
     else:
-        st.warning("Você não tem permissão para exportar as reservas.")
-
-# Chamar a função para exibir o botão de exportação, caso o usuário seja autorizado
-df_reservas = buscar_reservas()  # Sua função que busca as reservas
-exibir_exportar_reservas(df_reservas)
+        st.write("Nenhum usuário logado.")
 
 # Função para buscar reservas no banco de dados
 def buscar_reservas():
@@ -726,15 +724,14 @@ def buscar_reservas():
         st.error(f"Erro ao buscar reservas: {e}")
         return pd.DataFrame()  # Retorna DataFrame vazio se houver erro
 
-# Definir o usuário logado (simulação)
-if 'usuario_logado' not in st.session_state:
-    st.session_state.usuario_logado = 'adm02@vilaurbe.com.br'  # Defina o usuário logado para teste
-
-# Buscar as reservas
+# Exibir reservas e botão de exportação apenas para o usuário autorizado
 df_reservas = buscar_reservas()
 
-# Exibir o botão de exportação se o usuário for autorizado
-exibir_exportar_reservas(df_reservas)
+if not df_reservas.empty:
+    exibir_exportar_reservas(df_reservas)
+else:
+    st.warning('Nenhuma reserva disponível.')
+
 
 
 
