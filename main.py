@@ -639,10 +639,23 @@ def filtrar_reservas(df, dtRetirada=None, dtDevolucao=None, carros=None, cidades
     return df
 
 # Função para buscar reservas aplicando filtros
-def buscar_reservas_filtros(dtRetirada=None, dtDevolucao=None, carros=None, cidade=None):
+# Função para buscar reservas com filtros
+def buscar_reservas_filtros(dtRetirada=None, dtDevolucao=None, carro=None, cidade=None):
     df_reservas = carregar_reservas_do_banco()
-    return filtrar_reservas(df_reservas, dtRetirada, dtDevolucao, carros, cidade,)
 
+    if dtRetirada:
+        df_reservas = df_reservas[df_reservas['dtRetirada'] == pd.Timestamp(dtRetirada).strftime('%d/%m/%Y')]
+    
+    if dtDevolucao:
+        df_reservas = df_reservas[df_reservas['dtDevolucao'] == pd.Timestamp(dtDevolucao).strftime('%d/%m/%Y')]
+        
+    if carro:
+        df_reservas = df_reservas[df_reservas['carro'].str.contains(carro, case=False, na=False)]
+    
+    if cidade:
+        df_reservas = df_reservas[df_reservas['cidade'].str.contains(cidade, case=False, na=False)]
+
+    return df_reservas
 # Função para criar DataFrame formatado para visualização
 def criar_df_para_visualizacao(df):
     df['dtRetirada'] = pd.to_datetime(df['dtRetirada'], format='%d/%m/%Y')
@@ -1016,6 +1029,44 @@ def resetar_senha():
             if atualizar_senha_com_token(token, nova_senha):
                 st.success("Senha redefinida com sucesso!")
                 st.info("Agora você pode fazer login com sua nova senha.")
+
+
+
+# Função para consultar reservas com filtros e atualizar automaticamente se não houver filtros
+def consultar_reservas():
+    st.subheader('Consultar Reservas')
+    
+    # Formulário de filtros
+    with st.form(key='filtros'):
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            dtRetirada = st.date_input('Data de Retirada', value=None, key='dtRetirada')
+        with col2:
+            dtDevolucao = st.date_input('Data de Devolução', value=None, key='dtDevolucao')
+        with col3:
+            carro = st.text_input('Carro', value='', key='carro')
+        with col4:
+            cidade = st.text_input('Cidade', value='', key='cidade')
+
+        filtro_aplicado = st.form_submit_button('Buscar')
+
+    # Se nenhum filtro for aplicado, fazer a atualização automática
+    if not filtro_aplicado and not dtRetirada and not dtDevolucao and not carro and not cidade:
+        # Atualizar automaticamente a área de reservas se nenhum filtro foi aplicado
+        st.session_state.atualizar_tabela = True
+
+    # Filtrar reservas se houver filtros aplicados
+    if filtro_aplicado or st.session_state.atualizar_tabela:
+        df_filtrada = buscar_reservas_filtros(dtRetirada, dtDevolucao, carro, cidade)
+        if not df_filtrada.empty:
+            st.write(df_filtrada)
+        else:
+            st.error('Nenhuma reserva encontrada.')
+
+        # Se a tabela foi atualizada automaticamente, resetar o estado
+        st.session_state.atualizar_tabela = False
+    else:
+        exibir_reservas_interativas()
 
 
 
