@@ -712,6 +712,46 @@ def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, d
 
 
 
+# Função para exportar reservas para CSV
+def exportar_reservas_para_csv(df_reservas):
+    csv = df_reservas.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()  # Codifica o CSV para base64
+    href = f'<a href="data:file/csv;base64,{b64}" download="reservas.csv">Baixar CSV de todas as reservas</a>'
+    st.markdown(href, unsafe_allow_html=True)
+
+# Função para exibir o botão de exportação apenas para o usuário autorizado
+def exibir_exportar_reservas(df_reservas):
+    # Definir o usuário autorizado
+    usuario_autorizado = 'adm02@vilaurbe.com.br'  # Substitua pelo e-mail do usuário autorizado
+    
+    # Verificar se o usuário logado é o autorizado
+    if 'usuario_logado' in st.session_state:
+        if st.session_state.usuario_logado == usuario_autorizado:
+            st.write('### Exportar todas as reservas:')
+            exportar_reservas_para_csv(df_reservas)
+        else:
+            pass  # Não mostra nada para usuários não autorizados
+    else:
+        st.write("Nenhum usuário logado.")
+
+# Função para buscar reservas no banco de dados
+def buscar_reservas():
+    try:
+        with sqlite3.connect('reservas.db') as conn:
+            query = "SELECT * FROM reservas"
+            df_reservas = pd.read_sql_query(query, conn)
+        return df_reservas
+    except Exception as e:
+        st.error(f"Erro ao buscar reservas: {e}")
+        return pd.DataFrame()  # Retorna DataFrame vazio se houver erro
+
+# Exibir reservas e botão de exportação apenas para o usuário autorizado
+df_reservas = buscar_reservas()
+
+if not df_reservas.empty:
+    exibir_exportar_reservas(df_reservas)
+else:
+    st.warning('Nenhuma reserva disponível.')
 
 
 
