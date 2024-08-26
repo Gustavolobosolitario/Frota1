@@ -719,19 +719,11 @@ def atualizar_status_reserva(selected_id):
                     conn.commit()
                     st.success('Reserva cancelada com sucesso!')
                     
-                    # Enviar notificação de cancelamento
-                    cursor.execute('SELECT dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade FROM reservas WHERE id = ?', (selected_id,))
-                    detalhes_reserva = cursor.fetchone()
-                    if detalhes_reserva:
-                        dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos = detalhes_reserva
-                        enviar_notificacao_cancelamento(email_reserva, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos)
-                    
                     # Marcar para recarregar a tabela
                     st.session_state.atualizar_tabela = True
                     st.rerun()
                 else:
                     st.error('Você não tem permissão para cancelar esta reserva.')
-
 
 
 # Função para cancelar a reserva e enviar notificação
