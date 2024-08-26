@@ -639,24 +639,12 @@ def filtrar_reservas(df, dtRetirada=None, dtDevolucao=None, carros=None, cidades
     return df
 
 # Função para buscar reservas aplicando filtros
-# Função para buscar reservas com filtros
-def buscar_reservas_filtros(dtRetirada=None, dtDevolucao=None, carro=None, cidade=None):
+# Função para buscar reservas aplicando filtros
+def buscar_reservas_filtros(dtRetirada=None, dtDevolucao=None, carros=None, cidade=None):
     df_reservas = carregar_reservas_do_banco()
+    return filtrar_reservas(df_reservas, dtRetirada, dtDevolucao, carros, cidade,)
 
-    if dtRetirada:
-        df_reservas = df_reservas[df_reservas['dtRetirada'] == pd.Timestamp(dtRetirada).strftime('%d/%m/%Y')]
-    
-    if dtDevolucao:
-        df_reservas = df_reservas[df_reservas['dtDevolucao'] == pd.Timestamp(dtDevolucao).strftime('%d/%m/%Y')]
-        
-    if carro:
-        df_reservas = df_reservas[df_reservas['carro'].str.contains(carro, case=False, na=False)]
-    
-    if cidade:
-        df_reservas = df_reservas[df_reservas['cidade'].str.contains(cidade, case=False, na=False)]
 
-    return df_reservas
-# Função para criar DataFrame formatado para visualização
 def criar_df_para_visualizacao(df):
     df['dtRetirada'] = pd.to_datetime(df['dtRetirada'], format='%d/%m/%Y')
     df['dtDevolucao'] = pd.to_datetime(df['dtDevolucao'], format='%d/%m/%Y')
