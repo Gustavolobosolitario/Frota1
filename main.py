@@ -36,6 +36,11 @@ def gerar_token_tamanho_aleatorio(tamanho=20):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=tamanho))
 
 
+# Inicializando variáveis de sessão para controlar o recarregamento
+if 'atualizar_tabela' not in st.session_state:
+    st.session_state.atualizar_tabela = False
+
+
 
 # Inicializa o cache de reservas se não existir
 if 'reservas' not in st.session_state:
@@ -566,6 +571,10 @@ def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, d
                 conn.commit()
             enviar_notificacao_reserva(st.session_state.nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destino_str)
             st.success("Reserva realizada com sucesso!")
+            # Marcar a página para atualização
+            st.session_state.atualizar_tabela = True
+            st.experimental_rerun()  # Atualiza a página automaticamente
+        
         else:
             st.error("O veículo já está reservado para o período selecionado.")
     except sqlite3.Error as e:
@@ -750,6 +759,10 @@ def cancelar_reserva(selected_id):
                 # Enviar notificação de cancelamento
                 enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos)
                 st.success('Reserva cancelada com sucesso! Notificação enviada.')
+
+                # Marcar a página para atualização
+                st.session_state.atualizar_tabela = True
+                st.experimental_rerun()  # Atualiza a página automaticamente
             else:
                 st.error('Você não tem permissão para cancelar esta reserva.')
         else:
