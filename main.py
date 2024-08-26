@@ -831,7 +831,7 @@ else:
     
 
 # Função para exibir reservas na interface
-def exibir_reservas_interativas():
+
 def exibir_reservas_interativas():
     df_reservas = carregar_reservas_do_banco()
     
