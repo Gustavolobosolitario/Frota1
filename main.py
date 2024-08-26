@@ -552,20 +552,22 @@ def arredondar_para_intervalo(time_obj, intervalo_mins=30):
 # Função para adicionar uma nova reserva
 def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
     try:
-        st.write("Preparando para salvar a reserva...")
         destino_str = ', '.join(destinos) if destinos else ''
-        with sqlite3.connect('reservas.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute('''INSERT INTO reservas 
-                              (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                           (st.session_state.nome_completo, st.session_state.usuario_logado, 
-                            dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
-                            dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
-                            carro, destino_str, 'Agendado'))
-            conn.commit()
-        st.success("Reserva realizada com sucesso!")
-        st.write("Reserva salva no banco de dados.")
+        if veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
+            with sqlite3.connect('reservas.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute('''INSERT INTO reservas 
+                                  (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
+                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                               (st.session_state.nome_completo, st.session_state.usuario_logado, 
+                                dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
+                                dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
+                                carro, destino_str, 'Agendado'))
+                conn.commit()
+            enviar_notificacao_reserva(st.session_state.nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destino_str)
+            st.success("Reserva realizada com sucesso!")
+        else:
+            st.error("O veículo já está reservado para o período selecionado.")
     except sqlite3.Error as e:
         st.error(f"Erro ao adicionar reserva: {e}")
     except Exception as e:
@@ -600,7 +602,7 @@ def estilizar_reservas(df):
             return ['']*len(df.columns)
     return df.style.apply(lambda x: aplicar_estilo(x['status']), axis=1)
 
-# Função para carregar reservas do banco
+# Função para carregar reservas do banco de dados
 def carregar_reservas_do_banco():
     try:
         with sqlite3.connect('reservas.db') as conn:
@@ -836,6 +838,7 @@ else:
     
 
 # Função para exibir reservas na interface
+def exibir_reservas_interativas():
 def exibir_reservas_interativas():
     df_reservas = carregar_reservas_do_banco()
     
