@@ -218,8 +218,6 @@ def resetar_senha():
 
 
 
-
-    
     
     
         
@@ -228,7 +226,6 @@ def recuperar_senha(email):
     salvar_token_no_banco(email, token)
     link = f'https://frotavilaurbe.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
     enviar_email_recovery(email, link)
-
 
 
 
@@ -936,16 +933,7 @@ def verificar_tabelas():
 
 
 # Função para limpar o banco de dados
-def limpar_banco_dados():
-    try:
-        with sqlite3.connect('reservas.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("DROP TABLE IF EXISTS reservas;")
-            cursor.execute("DROP TABLE IF EXISTS usuarios;")
-            conn.commit()
-            criar_tabelas()
-    except sqlite3.OperationalError as e:
-        st.error(f"Erro ao acessar o banco de dados: {e}")
+
         
         
         
@@ -1044,10 +1032,7 @@ def home_page():
         if st.sidebar.button('Logout'):
             logout()
             
-        if st.sidebar.button('Limpar Banco de Dados'):
-            limpar_banco_dados()
-            st.session_state.clear()
-            st.experimental_get_query_params(pagina='home')
+        
 
         with st.container(border=True):
             st.title('Reserva')
