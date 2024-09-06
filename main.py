@@ -1318,5 +1318,5 @@ else:
             st.query_params(pagina='home')
     else:
 
-    home_page()
+home_page()
     
