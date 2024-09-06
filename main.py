@@ -466,6 +466,7 @@ def verificar_usuario(email, senha):
     except sqlite3.Error as e:
         st.error(f"Erro ao conectar ao banco de dados: {e}")
         return False
+        return email == "usuario@exemplo.com" and senha == "senha123"
 
 
 
@@ -497,15 +498,14 @@ def atualizar_senha(email, nova_senha):
 # Função para exibir o formulário de login, mas desaparece se o usuário estiver logado
 def login():
     # Verifica se o usuário já está logado
-    if st.session_state.usuario_logado is None:
+    if 'usuario_logado' not in st.session_state or st.session_state.usuario_logado is None:
         st.markdown('', unsafe_allow_html=True)
         st.subheader('Login')
 
         # Cria um formulário de login com uma chave única para o formulário
-        with st.form(key='login_form_unique', clear_on_submit=False, border=False):  # Clear_on_submit limpa o formulário após envio
-            
-            email = st.text_input('E-mail', placeholder='Digite seu e-mail',key='email_login_unique')
-            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha',key='senha_login_unique')
+        with st.form(key='login_form_unique', clear_on_submit=False):  # Clear_on_submit limpa o formulário após envio
+            email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')
+            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')
 
             # Botão de submit para realizar login
             submit_button = st.form_submit_button('Entrar')
@@ -514,24 +514,32 @@ def login():
         if submit_button:
             if verificar_usuario(email, senha):  # Verifica as credenciais do usuário
                 st.success('Login realizado com sucesso!')
-                # Define a variável de controle para redirecionamento
+                # Armazena o estado de login e nome do usuário
+                st.session_state.usuario_logado = True
+                st.session_state.nome_completo = email  # Use o nome do usuário ou o e-mail
                 st.session_state.login_successful = True
             else:
                 st.error('E-mail ou senha incorretos.')
     else:
         st.success(f"Você já está logado como {st.session_state.nome_completo}")
+        st.write("Redirecionando para a página de reservas...")
+
+        # Chama a função da página de reservas
+        pagina_reservas()
+
+
+
+
+
+
+
+
+def pagina_reservas():
+    st.subheader("Página de Reservas")
+    st.write("Aqui você pode ver e gerenciar suas reservas.")
 
 # Chama a função de login
 login()
-
-
-
-
-
-
-
-
-
 
 
 
