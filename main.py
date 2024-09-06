@@ -446,24 +446,25 @@ def adicionar_usuario(nome_completo, email, senha):
     except Exception as e:
         st.error(f'Erro ao adicionar usuário: {e}')
 
-# Função para verificar o usuário
+
+
 def verificar_usuario(email, senha):
-    # Verifica se o email tem o domínio correto
-    if not email.endswith('@vilaurbe.com.br'):
-        st.error("Acesso restrito. Apenas colaboradores são permitidos.")
-        return False
-    
     senha_hash = hashlib.sha256(senha.encode()).hexdigest()
-    with sqlite3.connect('reservas.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
-        usuario = cursor.fetchone()
-        if usuario:
-            st.session_state.usuario_logado = usuario[1]
-            st.session_state.nome_completo = usuario[0]
-            return True
-        else:
-            return False
+    try:
+        with sqlite3.connect('reservas.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
+            usuario = cursor.fetchone()
+            if usuario:
+                st.session_state.usuario_logado = usuario[1]
+                st.session_state.nome_completo = usuario[0]
+                return True
+            else:
+                return False
+    except sqlite3.Error as e:
+        st.error(f"Erro ao conectar ao banco de dados: {e}")
+        return False
+
 
 
 
@@ -484,45 +485,19 @@ def atualizar_senha(email, nova_senha):
         st.error(f"Erro ao atualizar a senha: {e}")
         return False
 
-
-
-
-
-
-
 # Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
-
-    # Cria um formulário de login
-    with st.form(key='login_form'):  # Usando um key exclusivo para o formulário
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login')
-
-        # Adiciona um botão de submit dentro do formulário
-        submit_button = st.form_submit_button('Entrar')
-
-    # Quando o formulário for submetido
-    if submit_button:
+    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    if st.button('Entrar'):
         if verificar_usuario(email, senha):
+            
             st.session_state.pagina = 'home'
+            
         else:
             st.error('E-mail ou senha incorretos.')
-
-# Controle da página exibida
-if 'pagina' not in st.session_state:
-    st.session_state.pagina = 'login'  # Página inicial
-
-if st.session_state.pagina == 'login':
-    login()
-elif st.session_state.pagina == 'home':
-    # Exibe a página inicial
-    st.write("Bem-vindo à home!")
-    if st.sidebar.button('Logout', key='logout_button'):  # Usando um key exclusivo para o botão
-        logout()
-
-
 
 # Função de cadastro
 def cadastro():
@@ -954,25 +929,6 @@ def verificar_tabelas():
                 st.write(f'  {column[1]}')
 
 
-def verificar_usuario(email, senha):
-    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
-    try:
-        with sqlite3.connect('reservas.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
-            usuario = cursor.fetchone()
-            if usuario:
-                st.session_state.usuario_logado = usuario[1]
-                st.session_state.nome_completo = usuario[0]
-                return True
-            else:
-                return False
-    except sqlite3.Error as e:
-        st.error(f"Erro ao conectar ao banco de dados: {e}")
-        return False
-
-
-
 
     
 
@@ -1058,11 +1014,12 @@ def logout():
     # Limpa o estado de sessão do usuário
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
-    
-    # Redireciona diretamente para a página de login
+    st.success("Você saiu com sucesso")
+
+    # Não usar st.experimental_rerun() e redirecionar de forma manual
+    st.write("Redirecionando para a página de login...")
+    # Exibe a página de login diretamente
     login()
-
-
 
 
 
