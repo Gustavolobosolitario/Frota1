@@ -489,12 +489,12 @@ def atualizar_senha(email, nova_senha):
 
 
 # Função de login
-def login(border=False):
+def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
     # Cria um formulário de login
-    with st.form(key='login_form'):
+    with st.form(key='login_form', border=False):
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
