@@ -1063,7 +1063,6 @@ def logout():
 
 
 
-
 def home_page():
     criar_tabelas()
     
@@ -1071,15 +1070,10 @@ def home_page():
 
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
-
-    
-    #Adicionar botão de logout na barra lateral
-        if 'usuario_logado' in st.session_state and st.session_state.usuario_logado is not None:
-        st.write(f"Bem-vindo, {st.session_state.nome_completo}!")
-        pagina_reservas()  # Se já logado, vai para a página de reservas
-        logout()  # Adiciona opção de logout
-    else:
-        login()
+        
+        #Adicionar botão de logout na barra lateral
+        if st.sidebar.button('Logout'):
+            logout()
             
         
 
