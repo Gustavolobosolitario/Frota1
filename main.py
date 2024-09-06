@@ -493,9 +493,9 @@ def atualizar_senha(email, nova_senha):
 # Função de login
 def login():
     with st.markdown('', unsafe_allow_html=True)
-    st.subheader('Login')
-    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+        st.subheader('Login')
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
     if st.button('Entrar'):
         if verificar_usuario(email, senha):
             
