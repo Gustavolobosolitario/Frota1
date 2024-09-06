@@ -488,13 +488,15 @@ def atualizar_senha(email, nova_senha):
 
 
 
+
+
 # Função para exibir o formulário de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
     # Cria um formulário de login
-    with st.form(key='login_form', clear_on_submit=False):  # Removi o 'border=False' pois não é um argumento válido
+    with st.form(key='login_form_unique'):  # Use uma key única para evitar conflitos
         email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login')
 
@@ -513,6 +515,7 @@ if submit_button:
         st.session_state.pagina = 'home'
     else:
         st.error('E-mail ou senha incorretos.')
+
 
 
 
