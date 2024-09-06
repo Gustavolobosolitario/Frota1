@@ -1030,7 +1030,7 @@ def logout():
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
     st.sucess("Você saiu com sucesso")
-    st.experimental_rerun()
+   
 
 
 
