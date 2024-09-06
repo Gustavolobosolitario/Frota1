@@ -1030,11 +1030,12 @@ def resetar_senha():
 
 
 def logout():
-    #Limpa o estado de sessão do usuario
+    # Limpa o estado de sessão do usuário
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
-    st.sucess("Você saiu com sucesso")
-    st.experimental_rerun()
+    st.success("Você saiu com sucesso")  # Corrigido para 'st.success'
+    st.experimental_rerun()  # Atualiza a página automaticamente
+
 
 
 
