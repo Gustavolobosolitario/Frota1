@@ -493,7 +493,6 @@ def atualizar_senha(email, nova_senha):
 
 
 
-# Verificar se o usuário está logado e, se sim, redirecionar para a página de reservas
 def login():
     if st.session_state.usuario_logado:
         st.session_state.pagina = 'reservas'
@@ -1368,3 +1367,16 @@ else:
             st.query_params(pagina='home')
     else:
         home_page()
+
+
+# Função principal para controle da página
+def main():
+    # Controle de qual página exibir
+    if st.session_state.get('pagina') == 'reservas':
+        home_page()
+    else:
+        login()
+
+# Inicializa o app
+if __name__ == "__main__":
+    main()
