@@ -1377,12 +1377,5 @@ else:
         home_page()
 
 
-# Função principal para controle da página
-def main():
-    # Controle de qual página exibir
-    if st.session_state.get('pagina') == 'reservas':
-        home_page()
-    else:
-        login()
 
 
