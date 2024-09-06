@@ -506,25 +506,30 @@ def atualizar_senha(email, nova_senha):
 
 # Função para exibir o formulário de login, mas desaparece se o usuário estiver logado
 def login():
-    # Verifica se o usuário já está logado
-    if 'usuario_logado' not in st.session_state or st.session_state.usuario_logado is None:
-        st.subheader('Login')
+    st.markdown('', unsafe_allow_html=True)
+    st.subheader('Login')
 
-        # Cria um formulário de login com uma chave única para o formulário
-         with st.form(key='login_form_unique'):  
-            email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')
-            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')
+    # Cria um formulário de login com uma chave única para o formulário
+    with st.form(key='login_form_unique'):  # Use uma key única para o formulário
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')  # Key única para o email
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')  # Key única para a senha
 
-            # Botão de submit para realizar login
-            submit_button = st.form_submit_button('Entrar')
-        
-            if verificar_usuario(email, senha):  # Verifica as credenciais do usuário
-                st.success('Login realizado com sucesso!')
-            else:
-                st.error('E-mail ou senha incorretos.')
+        # Adiciona um botão de submit dentro do formulário
+        submit_button = st.form_submit_button('Entrar')
+
+    return email, senha, submit_button
+
+# Chama a função login para obter os valores de email, senha e submit_button
+email, senha, submit_button = login()
+
+# Verifica se o botão foi clicado
+if submit_button:
+    if verificar_usuario(email, senha):  # Chama a função de verificação
+        st.success('Login realizado com sucesso!')
+        st.session_state.pagina = 'home'
     else:
-        st.success(f"Você já está logado como {st.session_state.nome_completo}")
-login()
+        st.error('E-mail ou senha incorretos.')
+
         
 
 
