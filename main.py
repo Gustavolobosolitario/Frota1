@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 from datetime import datetime, time
@@ -484,29 +485,19 @@ def atualizar_senha(email, nova_senha):
         st.error(f"Erro ao atualizar a senha: {e}")
         return False
 
-
-
-
-
 # Função de login
 def login():
+    st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
-    email = st.text_input('E-mail')
-    senha = st.text_input('Senha', type='password')
-    
+    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
     if st.button('Entrar'):
         if verificar_usuario(email, senha):
-            st.session_state.usuario_logado = email
-            st.session_state.pagina = 'reservas'
-            st.success("Login realizado com sucesso!")
-            st.experimental_rerun()
+            
+            st.session_state.pagina = 'home'
+            
         else:
-            st.error("E-mail ou senha incorretos.")
-
-
-
-
-
+            st.error('E-mail ou senha incorretos.')
 
 # Função de cadastro
 def cadastro():
