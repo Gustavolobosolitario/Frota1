@@ -526,6 +526,7 @@ def login():
                 st.error('E-mail ou senha incorretos.')
     else:
         st.success(f"Você já está logado como {st.session_state.nome_completo}")
+login()
         
 
 
