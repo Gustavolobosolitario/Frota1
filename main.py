@@ -485,12 +485,18 @@ def atualizar_senha(email, nova_senha):
         return False
 
 # Função de login
+# Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
-    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-    submit_button = st.form_submit_button('Entrar')
+
+    # Cria um formulário de login, o que permite pressionar Enter para submeter
+    with st.form(key='login_form'):
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+
+        # Adiciona um botão de submit dentro do formulário
+        submit_button = st.form_submit_button('Entrar')
 
     # Quando o formulário for submetido, seja pelo botão ou pelo Enter
     if submit_button:
@@ -498,6 +504,7 @@ def login():
             st.session_state.pagina = 'home'
         else:
             st.error('E-mail ou senha incorretos.')
+
 
 # Função de cadastro
 def cadastro():
