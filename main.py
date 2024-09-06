@@ -497,9 +497,13 @@ def login():
     with st.form(key='login_form', border=False):
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+        return (submit_button)
 
-        # Adiciona um botão de submit dentro do formulário
-        submit_button = st.form_submit_button('Entrar')
+        
+
+    # Adiciona um botão de submit dentro do formulário
+    def submit_button()
+    submit_button = st.form_submit_button('Entrar')
 
     # Quando o formulário for submetido
     if submit_button:
