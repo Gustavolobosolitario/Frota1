@@ -504,12 +504,12 @@ def login():
     return email, senha, submit_button
 
 
-    if submit_button:  # Verifica se o botão foi clicado
-        if verificar_usuario(email, senha):  # Chama a função de verificação
-            st.success('Login realizado com sucesso!')
-            st.session_state.pagina = 'home'
-        else:
-            st.error('E-mail ou senha incorretos.')
+if submit_button:  # Verifica se o botão foi clicado
+    if verificar_usuario(email, senha):  # Chama a função de verificação
+        st.success('Login realizado com sucesso!')
+        st.session_state.pagina = 'home'
+    else:
+        st.error('E-mail ou senha incorretos.')
 
 
 
