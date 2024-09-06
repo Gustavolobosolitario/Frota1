@@ -512,20 +512,14 @@ def botao_entrar(email, senha, submit_button):
         else:
             st.error('E-mail ou senha incorretos.')
 
-# Controle da página exibida
-if 'pagina' not in st.session_state:
-    st.session_state.pagina = 'login'  # Página inicial
 
-if st.session_state.pagina == 'login':
-    # Chama a função login para exibir o formulário e retornar email, senha e o estado do botão
-    email, senha, submit_button = login()
-    # Chama a função botao_entrar para lidar com a lógica de autenticação
-    botao_entrar(email, senha, submit_button)
-elif st.session_state.pagina == 'home':
-    # Exibe a página inicial
-    st.write("Bem-vindo à home!")
-    if st.sidebar.button('Logout', key='logout_button'):
-        logout()
+
+
+
+
+
+
+
 
 
         
