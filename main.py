@@ -492,17 +492,23 @@ def atualizar_senha(email, nova_senha):
 
 # Função de login
 def login():
-    with st.markdown('', unsafe_allow_html=True)
+    if st.session_state.usuario_logado is None:
+         st.markdown('', unsafe_allow_html=True
         st.subheader('Login')
+    
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-    if st.button('Entrar'):
-        if verificar_usuario(email, senha):
-            
-            st.session_state.pagina = 'home'
-            
-        else:
-            st.error('E-mail ou senha incorretos.')
+     # Botão de login
+        if st.button('Entrar'):
+            if verificar_usuario(email, senha):  # Verifica se as credenciais são válidas
+                st.success("Login realizado com sucesso!")
+                st.session_state.usuario_logado = email  # Define o estado de usuário logado
+                st.session_state.pagina = 'home'  # Redireciona para a página principal
+                st.experimental_rerun()  # Recarrega a página para refletir o estado de login
+            else:
+                st.error('E-mail ou senha incorretos.')
+    else:
+        st.success(f"Você já está logado como {st.session_state.usuario_logado}")
 
 
 
