@@ -1317,3 +1317,6 @@ else:
             st.session_state.pagina = 'home'
             st.query_params(pagina='home')
     else:
+
+    home_page()
+    
