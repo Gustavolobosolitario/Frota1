@@ -1354,6 +1354,14 @@ def home_page():
 # Exibe a página inicial ou outras páginas
 params = st.experimental_get_query_params()
 
+# Função principal para controle da página
+def main():
+    # Controle de qual página exibir
+    if st.session_state.get('pagina') == 'reservas':
+        home_page()
+    else:
+        login()
+
 if 'token' in params:
     resetar_senha()
 else:
@@ -1377,6 +1385,4 @@ def main():
     else:
         login()
 
-# Inicializa o app
-if __name__ == "__main__":
-    main()
+
