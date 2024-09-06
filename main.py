@@ -494,31 +494,36 @@ def atualizar_senha(email, nova_senha):
 
 
 
-# Função para exibir o formulário de login
+# Função para exibir o formulário de login, mas desaparece se o usuário estiver logado
 def login():
-    st.markdown('', unsafe_allow_html=True)
-    st.subheader('Login')
+    if st.session_state.usuario_logado is None:  # Exibe o login somente se o usuário não estiver logado
+        st.markdown('', unsafe_allow_html=True)
+        st.subheader('Login')
 
-    # Cria um formulário de login com uma chave única para o formulário
-    with st.form(key='login_form_unique'):  # Use uma key única para o formulário
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')  # Key única para o email
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')  # Key única para a senha
+        # Cria um formulário de login com uma chave única para o formulário
+        with st.form(key='login_form_unique'):  # Use uma key única para o formulário
+            email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')  # Key única para o email
+            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')  # Key única para a senha
 
-        # Adiciona um botão de submit dentro do formulário
-        submit_button = st.form_submit_button('Entrar')
+            # Adiciona um botão de submit dentro do formulário
+            submit_button = st.form_submit_button('Entrar')
 
-    return email, senha, submit_button
+        return email, senha, submit_button
+    else:
+        st.success(f"Você já está logado como {st.session_state.nome_completo}")
+        return None, None, None
 
 # Chama a função login para obter os valores de email, senha e submit_button
 email, senha, submit_button = login()
 
-# Verifica se o botão foi clicado
-if submit_button:
+# Verifica se o botão foi clicado e se o usuário não está logado
+if submit_button and email and senha:
     if verificar_usuario(email, senha):  # Chama a função de verificação
         st.success('Login realizado com sucesso!')
         st.session_state.pagina = 'home'
     else:
         st.error('E-mail ou senha incorretos.')
+
 
 
 
