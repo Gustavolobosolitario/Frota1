@@ -493,31 +493,29 @@ def atualizar_senha(email, nova_senha):
 
 
 
-# Função para exibir o formulário de login
+# Verificar se o usuário está logado e, se sim, redirecionar para a página de reservas
 def login():
-    st.markdown('', unsafe_allow_html=True)
-    st.subheader('Login')
-
-    # Cria um formulário de login com uma chave única para o formulário
-    with st.form(key='login_form_unique'):  # Use uma key única para o formulário
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')  # Key única para o email
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')  # Key única para a senha
-
-        # Adiciona um botão de submit dentro do formulário
-        submit_button = st.form_submit_button('Entrar')
-
-    return email, senha, submit_button
-
-# Chama a função login para obter os valores de email, senha e submit_button
-email, senha, submit_button = login()
-
-# Verifica se o botão foi clicado
-if submit_button:
-    if verificar_usuario(email, senha):  # Chama a função de verificação
-        st.success('Login realizado com sucesso!')
-        st.session_state.pagina = 'home'
+    if st.session_state.usuario_logado:
+        st.session_state.pagina = 'reservas'
     else:
-        st.error('E-mail ou senha incorretos.')
+        st.markdown('', unsafe_allow_html=True)
+        st.subheader('Login')
+        
+        # Cria um formulário de login
+        with st.form(key='login_form_unique'):
+            email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')
+            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')
+            
+            # Adiciona um botão de submit dentro do formulário
+            submit_button = st.form_submit_button('Entrar')
+
+        # Verifica se o botão foi clicado
+        if submit_button:
+            if verificar_usuario(email, senha):  # Chama a função de verificação
+                st.success('Login realizado com sucesso!')
+                st.session_state.pagina = 'reservas'
+            else:
+                st.error('E-mail ou senha incorretos.')
 
 
 
@@ -1074,12 +1072,10 @@ def home_page():
     
     st.sidebar.image('logo.png', use_column_width=True)
 
-    if st.session_state.get('usuario_logado'):
-        st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
-
-    
-    #Adicionar botão de logout na barra lateral
-        st.sidebar.write("Dê dois cliques no botão para sair.")
+    if st.session_state.usuario_logado:
+        criar_tabelas()  # Chama função para criar tabelas se necessário
+        st.sidebar.header(f'Bem-vindo, {st.session_state.nome_completo}')
+        
         if st.sidebar.button('Logout'):
             logout()
             
