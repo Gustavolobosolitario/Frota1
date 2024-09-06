@@ -519,7 +519,7 @@ def login():
             submit_button = st.form_submit_button('Entrar')
 
         # Ação de login automático se o botão for clicado
-        if submit_button:
+        
             if verificar_usuario(email, senha):  # Verifica as credenciais do usuário
                 st.success('Login realizado com sucesso!')
             else:
