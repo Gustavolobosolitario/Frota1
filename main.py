@@ -492,33 +492,15 @@ def atualizar_senha(email, nova_senha):
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
-
-    # Cria um formulário de login, que também aceita o 'Enter'
-    with st.form(key='login_form'):  # Usando um key exclusivo para o formulário
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login')
-
-        # Adiciona um botão de submit dentro do formulário
-        submit_button = st.form_submit_button('Entrar')  # Agora, aceita 'Enter' para submissão também
-
-    # Quando o formulário for submetido, seja pelo botão ou pelo Enter
-    if submit_button:
+    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    if st.button('Entrar'):
         if verificar_usuario(email, senha):
+            
             st.session_state.pagina = 'home'
+            
         else:
             st.error('E-mail ou senha incorretos.')
-
-# Controle da página exibida
-if 'pagina' not in st.session_state:
-    st.session_state.pagina = 'login'  # Página inicial
-
-if st.session_state.pagina == 'login':
-    login()
-elif st.session_state.pagina == 'home':
-    # Exibe a página inicial
-    st.write("Bem-vindo à home!")
-    if st.sidebar.button('Logout', key='logout_button'):  # Usando um key exclusivo para o botão
-        logout()
 
 
 
