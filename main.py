@@ -504,14 +504,16 @@ def atualizar_senha(email, nova_senha):
 
 
 # Função para exibir o formulário de login, mas desaparece se o usuário estiver logado
+import streamlit as st
+
+# Função para exibir o formulário de login, mas desaparece se o usuário estiver logado
 def login():
     # Verifica se o usuário já está logado
     if 'usuario_logado' not in st.session_state or st.session_state.usuario_logado is None:
-        st.markdown('', unsafe_allow_html=True)
         st.subheader('Login')
 
         # Cria um formulário de login com uma chave única para o formulário
-        with st.form(key='login_form_unique', clear_on_submit=False):  # Clear_on_submit limpa o formulário após envio
+        with st.form(key='login_form_unique', clear_on_submit=False,border =False):
             email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')
             senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')
 
@@ -522,10 +524,6 @@ def login():
         if submit_button:
             if verificar_usuario(email, senha):  # Verifica as credenciais do usuário
                 st.success('Login realizado com sucesso!')
-                # Armazena o estado de login e nome do usuário
-                st.session_state.usuario_logado = True
-                st.session_state.nome_completo = email  # Use o nome do usuário ou o e-mail
-                st.session_state.login_successful = True
             else:
                 st.error('E-mail ou senha incorretos.')
     else:
@@ -535,13 +533,7 @@ def login():
         # Chama a função da página de reservas
         pagina_reservas()
 
-
-
-
-
-
-
-
+# Função simulada para exibir a página de reservas
 def pagina_reservas():
     st.subheader("Página de Reservas")
     st.write("Aqui você pode ver e gerenciar suas reservas.")
