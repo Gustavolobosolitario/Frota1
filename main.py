@@ -491,17 +491,17 @@ def atualizar_senha(email, nova_senha):
 
 
 
+
+
+# Função para exibir o formulário de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
-    # Gera uma chave única para o formulário
-    unique_key = f'login_form_{str(uuid.uuid4())}'  
-
-    # Cria um formulário de login com uma chave exclusiva
-    with st.form(key=unique_key):  # Key única para evitar conflitos
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login')
+    # Cria um formulário de login com uma chave única para o formulário
+    with st.form(key='login_form_unique'):  # Use uma key única para o formulário
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')  # Key única para o email
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')  # Key única para a senha
 
         # Adiciona um botão de submit dentro do formulário
         submit_button = st.form_submit_button('Entrar')
@@ -518,6 +518,7 @@ if submit_button:
         st.session_state.pagina = 'home'
     else:
         st.error('E-mail ou senha incorretos.')
+
 
 
 
