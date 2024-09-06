@@ -1341,9 +1341,8 @@ def home_page():
     else:
         menu_autenticacao = st.sidebar.radio('Selecione uma opção', ['Login', 'Cadastro', 'Recuperar Senha'])
 
-        if menu_autenticacao == 'Login':
-            login()
-        elif menu_autenticacao == 'Cadastro':
+        
+        if menu_autenticacao == 'Cadastro':
             cadastro()
         elif menu_autenticacao == 'Recuperar Senha':
             email = st.text_input("Digite seu email:")
