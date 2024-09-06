@@ -1063,13 +1063,25 @@ def resetar_senha():
 def logout():
     # Limpa o estado de sessão do usuário
     st.session_state.usuario_logado = None
-    st.session_state.pagina = 'login'
-    st.success("Você saiu com sucesso")
+    st.session_state.nome_completo = None  # Limpa o nome completo também
+    st.session_state.pagina = 'login'  # Define a página atual como 'login'
+    
+    st.success("Você saiu com sucesso!")  # Mensagem de sucesso
 
-    # Não usar st.experimental_rerun() e redirecionar de forma manual
+    # Redireciona de forma manual para a página de login
     st.write("Redirecionando para a página de login...")
-    # Exibe a página de login diretamente
-    login()
+
+    # Exibe a página de login diretamente após o logout
+    email, senha, submit_button = login()
+
+    # Caso o usuário tente logar novamente, o formulário de login já estará visível
+    if submit_button and email and senha:
+        if verificar_usuario(email, senha):  # Verifica novamente se o login foi bem-sucedido
+            st.success('Login realizado com sucesso!')
+            st.session_state.pagina = 'home'
+        else:
+            st.error('E-mail ou senha incorretos.')
+
 
 
 
