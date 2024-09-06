@@ -1336,12 +1336,6 @@ def home_page():
         st.title('Todas as Reservas')
         exibir_reservas_interativas()
 
-# Função principal para controle da página
-def main():
-    if st.session_state.get('pagina') == 'reservas':
-        home_page()
-    else:
-        login()
 
 
     else:
