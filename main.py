@@ -511,7 +511,7 @@ def login():
         st.subheader('Login')
 
         # Cria um formulário de login com uma chave única para o formulário
-        with st.form(clear_on_submit=False,border =False):
+         with st.form(key='login_form_unique'):  
             email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')
             senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')
 
