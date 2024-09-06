@@ -504,35 +504,19 @@ def atualizar_senha(email, nova_senha):
 
 
 
-# Função para exibir o formulário de login, mas desaparece se o usuário estiver logado
+# Função de login
 def login():
-    # Verifica se o usuário já está logado
-    if st.session_state.usuario_logado is None:
-        st.markdown('', unsafe_allow_html=True)
-        st.subheader('Login')
-
-        # Cria um formulário de login com uma chave única para o formulário
-        with st.form(key='login_form_unique', clear_on_submit=False, border=False):  # Clear_on_submit limpa o formulário após envio
+    st.markdown('', unsafe_allow_html=True)
+    st.subheader('Login')
+    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    if st.button('Entrar'):
+        if verificar_usuario(email, senha):
+            st.success('Login bem-sucedido!')
+            st.session_state.pagina = 'home'
             
-            email = st.text_input('E-mail', placeholder='Digite seu e-mail',key='email_login_unique')
-            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha',key='senha_login_unique')
-
-            # Botão de submit para realizar login
-            submit_button = st.form_submit_button('Entrar')
-
-        # Ação de login automático se o botão for clicado
-        if submit_button:
-            if verificar_usuario(email, senha):  # Verifica as credenciais do usuário
-                st.success('Login realizado com sucesso!')
-                # Define a variável de controle para redirecionamento
-                st.session_state.login_successful = True
-            else:
-                st.error('E-mail ou senha incorretos.')
-    else:
-        st.success(f"Você já está logado como {st.session_state.nome_completo}")
-
-# Chama a função de login
-login()
+        else:
+            st.error('E-mail ou senha incorretos.')
 
 
         
