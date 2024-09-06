@@ -1035,7 +1035,7 @@ def home_page():
 
     
     #Adicionar botão de logout na barra lateral
-        st.sidebar.write("Dê dois cliques")
+        st.sidebar.write("Dê dois cliques no botão para sair.")
         if st.sidebar.button('Logout'):
             logout()
             
