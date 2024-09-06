@@ -450,31 +450,25 @@ def adicionar_usuario(nome_completo, email, senha):
 
 
 
+# Função para verificar o usuário
 def verificar_usuario(email, senha):
-    # Gerar o hash da senha usando SHA-256
-    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
-    
-    try:
-        # Conectar ao banco de dados SQLite
-        with sqlite3.connect('reservas.db') as conn:
-            cursor = conn.cursor()
-            
-            # Verificar se o email e senha (em hash) estão no banco de dados
-            cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
-            usuario = cursor.fetchone()
-            
-            # Se o usuário for encontrado, armazenar os dados na sessão
-            if usuario:
-                st.session_state.usuario_logado = usuario[1]  # Armazena o e-mail como identificação do usuário logado
-                st.session_state.nome_completo = usuario[0]   # Armazena o nome completo do usuário
-                return True
-            else:
-                return False
-    
-    except sqlite3.Error as e:
-        # Caso ocorra um erro de conexão ou consulta ao banco de dados, exibir a mensagem de erro
-        st.error(f"Erro ao conectar ao banco de dados: {e}")
+    # Verifica se o email tem o domínio correto
+    if not email.endswith('@vilaurbe.com.br'):
+        st.error("Acesso restrito. Apenas colaboradores são permitidos.")
         return False
+    
+    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+    with sqlite3.connect('reservas.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
+        usuario = cursor.fetchone()
+        if usuario:
+            st.session_state.usuario_logado = usuario[1]
+            st.session_state.nome_completo = usuario[0]
+            return True
+        else:
+            return False
+
 
 
 
