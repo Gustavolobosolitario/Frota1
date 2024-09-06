@@ -492,7 +492,7 @@ def login():
     senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
     if st.button('Entrar'):
         if verificar_usuario(email, senha):
-            st.success('Login bem-sucedido!')
+            
             st.session_state.pagina = 'home'
             
         else:
