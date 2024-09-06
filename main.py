@@ -1029,7 +1029,8 @@ def logout():
     #Limpa o estado de sessão do usuario
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
-    st.sucess("Você saiu com sucesso")
+    st.success("Você saiu com sucesso")
+
    
 
 
