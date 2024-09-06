@@ -489,8 +489,8 @@ def atualizar_senha(email, nova_senha):
 
 
 # Função de login
-def login():
-    st.markdown('', unsafe_allow_html=False)
+def login(border=True):
+    st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
     # Cria um formulário de login
