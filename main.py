@@ -498,6 +498,18 @@ def login():
         else:
             st.error('E-mail ou senha incorretos.')
 
+# Controle da página exibida
+if 'pagina' not in st.session_state:
+    st.session_state.pagina = 'login'  # Página inicial
+
+if st.session_state.pagina == 'login':
+    login()
+elif st.session_state.pagina == 'home':
+    # Exibe a página inicial
+    st.write("Bem-vindo à home!")
+    if st.button('Logout'):
+        logout()
+
 # Função de cadastro
 def cadastro():
     st.markdown('<div style="background-color:#f0f2f6;padding:20px;border-radius:8px;">', unsafe_allow_html=True)
@@ -1035,8 +1047,6 @@ def logout():
     st.session_state.pagina = 'login'
     st.success("Você saiu com sucesso")
 
-    # Não usar st.experimental_rerun() e redirecionar de forma manual
-    st.write("Redirecionando para a página de login...")
     # Exibe a página de login diretamente
     login()
 
