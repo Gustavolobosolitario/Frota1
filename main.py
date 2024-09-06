@@ -928,6 +928,25 @@ def verificar_tabelas():
                 st.write(f'  {column[1]}')
 
 
+def verificar_usuario(email, senha):
+    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+    try:
+        with sqlite3.connect('reservas.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
+            usuario = cursor.fetchone()
+            if usuario:
+                st.session_state.usuario_logado = usuario[1]
+                st.session_state.nome_completo = usuario[0]
+                return True
+            else:
+                return False
+    except sqlite3.Error as e:
+        st.error(f"Erro ao conectar ao banco de dados: {e}")
+        return False
+
+
+
 
     
 
