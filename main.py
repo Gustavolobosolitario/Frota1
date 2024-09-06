@@ -1330,11 +1330,12 @@ def home_page():
         st.title('Todas as Reservas')
         exibir_reservas_interativas()
 
-    else:
+        else:
         menu_autenticacao = st.sidebar.radio('Selecione uma opção', ['Login', 'Cadastro', 'Recuperar Senha'])
 
-        
-        if menu_autenticacao == 'Cadastro':
+        if menu_autenticacao == 'Login':
+            login()
+        elif menu_autenticacao == 'Cadastro':
             cadastro()
         elif menu_autenticacao == 'Recuperar Senha':
             email = st.text_input("Digite seu email:")
@@ -1360,3 +1361,4 @@ else:
             st.query_params(pagina='home')
     else:
         home_page()
+
