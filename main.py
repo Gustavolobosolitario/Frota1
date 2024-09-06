@@ -1033,9 +1033,12 @@ def home_page():
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
 
-        #Adicionar botão de logout na barra lateral
-        if st.sidebar.button('Logout'):
-            logout()
+        # Exibe uma mensagem para o usuário
+    st.sidebar.write("Dê dois cliques no botão para sair.")
+    
+    # Adicionar botão de logout na barra lateral
+    if st.sidebar.button('Logout', key='logout_button'):
+        logout()
             
         
 
