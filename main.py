@@ -1068,7 +1068,7 @@ def logout():
 
 
 def home_page():
-    criar_tabelas()
+    
     
     st.sidebar.image('logo.png', use_column_width=True)
 
