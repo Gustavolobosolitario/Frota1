@@ -503,8 +503,8 @@ def login():
 
         # Cria um formulário de login com uma chave única para o formulário
         with st.form(key='login_form_unique', clear_on_submit=True):  # Clear_on_submit limpa o formulário após envio
-            email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')
-            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')
+            email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
             # Botão de submit para realizar login
             submit_button = st.form_submit_button('Entrar')
