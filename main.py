@@ -494,7 +494,7 @@ def login():
     st.subheader('Login')
 
     # Cria um formulário de login
-    with st.form(key='login_form'):
+    with st.form(key='login_form', border=False):
         email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login')
 
@@ -503,8 +503,7 @@ def login():
 
     return email, senha, submit_button
 
-# Função para lidar com o clique do botão de login
-def botao_entrar(email, senha, submit_button):
+
     if submit_button:  # Verifica se o botão foi clicado
         if verificar_usuario(email, senha):  # Chama a função de verificação
             st.success('Login realizado com sucesso!')
