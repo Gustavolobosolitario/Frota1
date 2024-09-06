@@ -1033,8 +1033,13 @@ def logout():
     # Limpa o estado de sessão do usuário
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
-    st.success("Você saiu com sucesso")  # Corrigido para 'st.success'
-    st.experimental_rerun()  # Atualiza a página automaticamente
+    st.success("Você saiu com sucesso")
+
+    # Adiciona uma condição para garantir que st.experimental_rerun() seja chamado uma vez
+    if 'logged_out' not in st.session_state:
+        st.session_state.logged_out = True
+        st.experimental_rerun()  # Atualiza a página automaticamente
+
 
 
 
