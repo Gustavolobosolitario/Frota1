@@ -496,9 +496,9 @@ def login():
     st.subheader('Login')
 
     # Cria um formulário de login
-    with st.form(key='login_form'):
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    with st.form(key='login_form'):  # Usando um key exclusivo para o formulário
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login')
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login')
 
         # Adiciona um botão de submit dentro do formulário
         submit_button = st.form_submit_button('Entrar')
@@ -519,7 +519,7 @@ if st.session_state.pagina == 'login':
 elif st.session_state.pagina == 'home':
     # Exibe a página inicial
     st.write("Bem-vindo à home!")
-    if st.button('Logout'):
+    if st.sidebar.button('Logout', key='logout_button'):  # Usando um key exclusivo para o botão
         logout()
 
 
