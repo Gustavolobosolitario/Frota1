@@ -14,6 +14,7 @@ from datetime import datetime
 import random
 import string
 import warnings
+import uuid  # Para gerar uma chave única
 
 
 # Conectar ao banco de dados SQLite
@@ -447,24 +448,25 @@ def adicionar_usuario(nome_completo, email, senha):
     except Exception as e:
         st.error(f'Erro ao adicionar usuário: {e}')
 
-# Função para verificar o usuário
+
+
 def verificar_usuario(email, senha):
-    # Verifica se o email tem o domínio correto
-    if not email.endswith('@vilaurbe.com.br'):
-        st.error("Acesso restrito. Apenas colaboradores são permitidos.")
-        return False
-    
     senha_hash = hashlib.sha256(senha.encode()).hexdigest()
-    with sqlite3.connect('reservas.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
-        usuario = cursor.fetchone()
-        if usuario:
-            st.session_state.usuario_logado = usuario[1]
-            st.session_state.nome_completo = usuario[0]
-            return True
-        else:
-            return False
+    try:
+        with sqlite3.connect('reservas.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
+            usuario = cursor.fetchone()
+            if usuario:
+                st.session_state.usuario_logado = usuario[1]
+                st.session_state.nome_completo = usuario[0]
+                return True
+            else:
+                return False
+    except sqlite3.Error as e:
+        st.error(f"Erro ao conectar ao banco de dados: {e}")
+        return False
+
 
 
 
@@ -488,28 +490,59 @@ def atualizar_senha(email, nova_senha):
 
 
 
-def login():
-    if st.session_state.usuario_logado:
-        st.session_state.pagina = 'reservas'
-    else:
-        st.markdown('', unsafe_allow_html=True)
-        st.subheader('Login')
-        
-        # Cria um formulário de login
-        with st.form(key='login_form_unique'):
-            email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')
-            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')
-            
-            # Adiciona um botão de submit dentro do formulário
-            submit_button = st.form_submit_button('Entrar')
 
-        # Verifica se o botão foi clicado
-        if submit_button:
-            if verificar_usuario(email, senha):  # Chama a função de verificação
-                st.success('Login realizado com sucesso!')
-                st.session_state.pagina = 'reservas'
-            else:
-                st.error('E-mail ou senha incorretos.')
+
+
+
+# Função para exibir o formulário de login
+def login():
+    st.markdown('', unsafe_allow_html=True)
+    st.subheader('Login')
+
+    # Cria um formulário de login com uma chave única para o formulário
+    with st.form(key='login_form_unique'):  # Use uma key única para o formulário
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')  # Key única para o email
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')  # Key única para a senha
+
+        # Adiciona um botão de submit dentro do formulário
+        submit_button = st.form_submit_button('Entrar')
+
+    return email, senha, submit_button
+
+# Chama a função login para obter os valores de email, senha e submit_button
+email, senha, submit_button = login()
+
+# Verifica se o botão foi clicado
+if submit_button:
+    if verificar_usuario(email, senha):  # Chama a função de verificação
+        st.success('Login realizado com sucesso!')
+        st.session_state.pagina = 'home'
+    else:
+        st.error('E-mail ou senha incorretos.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      
+
+
+
+
+
+
+
 
 # Função de cadastro
 def cadastro():
@@ -1022,13 +1055,17 @@ def resetar_senha():
 
 
 
-
 def logout():
-    #Limpa o estado de sessão do usuario
+    # Limpa o estado de sessão do usuário
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
-    st.sucess("Você saiu com sucesso")
-    st.experimental_rerun()
+    st.success("Você saiu com sucesso")
+
+    # Não usar st.experimental_rerun() e redirecionar de forma manual
+    st.write("Redirecionando para a página de login...")
+    # Exibe a página de login diretamente
+    login()
+
 
 
 
@@ -1041,7 +1078,9 @@ def home_page():
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
 
-        #Adicionar botão de logout na barra lateral
+    
+    #Adicionar botão de logout na barra lateral
+        st.sidebar.write("Dê dois cliques no botão para sair.")
         if st.sidebar.button('Logout'):
             logout()
             
@@ -1303,9 +1342,8 @@ def home_page():
     else:
         menu_autenticacao = st.sidebar.radio('Selecione uma opção', ['Login', 'Cadastro', 'Recuperar Senha'])
 
-        if menu_autenticacao == 'Login':
-            login()
-        elif menu_autenticacao == 'Cadastro':
+        
+        if menu_autenticacao == 'Cadastro':
             cadastro()
         elif menu_autenticacao == 'Recuperar Senha':
             email = st.text_input("Digite seu email:")
