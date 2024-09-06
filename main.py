@@ -499,14 +499,14 @@ def login():
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
      # Botão de login
-        if st.button('Entrar'):
-            if verificar_usuario(email, senha):  # Verifica se as credenciais são válidas
-                st.success("Login realizado com sucesso!")
-                st.session_state.usuario_logado = email  # Define o estado de usuário logado
-                st.session_state.pagina = 'home'  # Redireciona para a página principal
-                st.experimental_rerun()  # Recarrega a página para refletir o estado de login
-            else:
-                st.error('E-mail ou senha incorretos.')
+    if st.button('Entrar'):
+        if verificar_usuario(email, senha):  # Verifica se as credenciais são válidas
+            st.success("Login realizado com sucesso!")
+            st.session_state.usuario_logado = email  # Define o estado de usuário logado
+            st.session_state.pagina = 'home'  # Redireciona para a página principal
+            st.experimental_rerun()  # Recarrega a página para refletir o estado de login
+        else:
+            st.error('E-mail ou senha incorretos.')
   
 
 
