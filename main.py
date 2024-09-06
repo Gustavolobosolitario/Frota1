@@ -1072,10 +1072,12 @@ def home_page():
     
     st.sidebar.image('logo.png', use_column_width=True)
 
-    if st.session_state.usuario_logado:
-        
-        st.sidebar.header(f'Bem-vindo, {st.session_state.nome_completo}')
-        
+    if st.session_state.get('usuario_logado'):
+        st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
+
+    
+    #Adicionar botão de logout na barra lateral
+        st.sidebar.write("Dê dois cliques no botão para sair.")
         if st.sidebar.button('Logout'):
             logout()
             
