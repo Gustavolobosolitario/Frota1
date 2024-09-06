@@ -485,19 +485,31 @@ def atualizar_senha(email, nova_senha):
         st.error(f"Erro ao atualizar a senha: {e}")
         return False
 
-# Função de login
+
+
+
 def login():
-    st.markdown('', unsafe_allow_html=True)
-    st.subheader('Login')
-    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-    if st.button('Entrar'):
-        if verificar_usuario(email, senha):
+    if st.session_state.usuario_logado:
+        st.session_state.pagina = 'reservas'
+    else:
+        st.markdown('', unsafe_allow_html=True)
+        st.subheader('Login')
+        
+        # Cria um formulário de login
+        with st.form(key='login_form_unique'):
+            email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login_unique')
+            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login_unique')
             
-            st.session_state.pagina = 'home'
-            
-        else:
-            st.error('E-mail ou senha incorretos.')
+            # Adiciona um botão de submit dentro do formulário
+            submit_button = st.form_submit_button('Entrar')
+
+        # Verifica se o botão foi clicado
+        if submit_button:
+            if verificar_usuario(email, senha):  # Chama a função de verificação
+                st.success('Login realizado com sucesso!')
+                st.session_state.pagina = 'reservas'
+            else:
+                st.error('E-mail ou senha incorretos.')
 
 # Função de cadastro
 def cadastro():
