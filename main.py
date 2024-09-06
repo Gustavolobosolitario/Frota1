@@ -507,8 +507,7 @@ def login():
                 st.experimental_rerun()  # Recarrega a página para refletir o estado de login
             else:
                 st.error('E-mail ou senha incorretos.')
-    else:
-        st.success(f"Você já está logado como {st.session_state.usuario_logado}")
+  
 
 
 
