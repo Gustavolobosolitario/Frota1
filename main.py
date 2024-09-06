@@ -485,18 +485,12 @@ def atualizar_senha(email, nova_senha):
         return False
 
 # Função de login
-# Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
-
-    # Cria um formulário de login, o que permite pressionar Enter para submeter
-    with st.form(key='login_form'):
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-
-        # Adiciona um botão de submit dentro do formulário
-        submit_button = st.form_submit_button('Entrar')
+    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    submit_button = st.form_submit_button('Entrar')
 
     # Quando o formulário for submetido, seja pelo botão ou pelo Enter
     if submit_button:
@@ -504,7 +498,6 @@ def login():
             st.session_state.pagina = 'home'
         else:
             st.error('E-mail ou senha incorretos.')
-
 
 # Função de cadastro
 def cadastro():
@@ -691,7 +684,7 @@ def visualizar_reservas():
 def veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
     df_reservas = carregar_reservas_do_banco()
 
-    # Convertendo as datas das reservas para o formato `datetime.date`
+    # Convertendo as datas das reservas para o formato datetime.date
     df_reservas['dtRetirada'] = pd.to_datetime(df_reservas['dtRetirada'], format='%d/%m/%Y').dt.date
     df_reservas['dtDevolucao'] = pd.to_datetime(df_reservas['dtDevolucao'], format='%d/%m/%Y').dt.date
     df_reservas['hrRetirada'] = pd.to_datetime(df_reservas['hrRetirada'], format='%H:%M:%S').dt.time
@@ -1326,4 +1319,3 @@ else:
             st.query_params(pagina='home')
     else:
         home_page()
-
