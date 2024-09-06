@@ -484,19 +484,43 @@ def atualizar_senha(email, nova_senha):
         st.error(f"Erro ao atualizar a senha: {e}")
         return False
 
+
+
+
+
+
+
 # Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
-    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-    if st.button('Entrar'):
+
+    # Cria um formulário de login
+    with st.form(key='login_form'):
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+
+        # Adiciona um botão de submit dentro do formulário
+        submit_button = st.form_submit_button('Entrar')
+
+    # Quando o formulário for submetido
+    if submit_button:
         if verificar_usuario(email, senha):
-            
             st.session_state.pagina = 'home'
-            
         else:
             st.error('E-mail ou senha incorretos.')
+
+# Controle da página exibida
+if 'pagina' not in st.session_state:
+    st.session_state.pagina = 'login'  # Página inicial
+
+if st.session_state.pagina == 'login':
+    login()
+elif st.session_state.pagina == 'home':
+    # Exibe a página inicial
+    st.write("Bem-vindo à home!")
+    if st.button('Logout'):
+        logout()
 
 
 
