@@ -1067,19 +1067,19 @@ def logout():
 
 
 
+# Exibe a página de reservas se o usuário estiver logado
 def home_page():
-    
-    
-    st.sidebar.image('logo.png', use_column_width=True)
-
-    if st.session_state.get('usuario_logado'):
-        st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
-
-    
-    #Adicionar botão de logout na barra lateral
-        st.sidebar.write("Dê dois cliques no botão para sair.")
+    if st.session_state.usuario_logado:
+        criar_tabelas()  # Chama função para criar tabelas se necessário
+        st.sidebar.header(f'Bem-vindo, {st.session_state.nome_completo}')
+        
         if st.sidebar.button('Logout'):
             logout()
+        
+        st.title('Reservas')
+        exibir_reservas_interativas()
+    else:
+        st.warning('Por favor, faça login para acessar as reservas.')
             
         
 
@@ -1335,6 +1335,20 @@ def home_page():
 
         st.title('Todas as Reservas')
         exibir_reservas_interativas()
+
+# Exibe a página de reservas se o usuário estiver logado
+def home_page():
+    if st.session_state.usuario_logado:
+        criar_tabelas()  # Chama função para criar tabelas se necessário
+        st.sidebar.header(f'Bem-vindo, {st.session_state.nome_completo}')
+        
+        if st.sidebar.button('Logout'):
+            logout()
+        
+        st.title('Reservas')
+        exibir_reservas_interativas()
+    else:
+        st.warning('Por favor, faça login para acessar as reservas.')
 
     else:
         menu_autenticacao = st.sidebar.radio('Selecione uma opção', ['Login', 'Cadastro', 'Recuperar Senha'])
