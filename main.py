@@ -1030,16 +1030,12 @@ def resetar_senha():
 
 
 
-
 def logout():
     # Limpa o estado de sessão do usuário
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
-    st.success("Você saiu com sucesso")
-
-     # Não usar st.experimental_rerun() e redirecionar de forma manual
-    st.write("Redirecionando para a página de login...")
-    # Exibe a página de login diretamente
+    
+    # Redireciona diretamente para a página de login
     login()
 
 
