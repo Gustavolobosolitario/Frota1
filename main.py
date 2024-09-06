@@ -494,19 +494,16 @@ def login():
     st.subheader('Login')
     email = st.text_input('E-mail', placeholder='Digite seu e-mail')
     senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-    if st.button('Entrar'):
-        if verificar_usuario(email, senha):
-            
-            st.session_state.pagina = 'home'
-            
-        else:
-            st.error('E-mail ou senha incorretos.')
+     submit_button = st.form_submit_button('Entrar')
         # Quando o formulário for submetido
-        
+    if submit_button:
         if verificar_usuario(email, senha):
             st.session_state.pagina = 'home'
         else:
             st.error('E-mail ou senha incorretos.')
+
+        
+      
 
 
 
