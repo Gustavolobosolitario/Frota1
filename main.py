@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime, time
@@ -14,7 +13,6 @@ from datetime import datetime
 import random
 import string
 import warnings
-
 
 
 # Conectar ao banco de dados SQLite
@@ -448,8 +446,6 @@ def adicionar_usuario(nome_completo, email, senha):
     except Exception as e:
         st.error(f'Erro ao adicionar usuário: {e}')
 
-
-
 # Função para verificar o usuário
 def verificar_usuario(email, senha):
     # Verifica se o email tem o domínio correto
@@ -472,8 +468,6 @@ def verificar_usuario(email, senha):
 
 
 
-
-
 # Função para atualizar a senha do usuário
 def atualizar_senha(email, nova_senha):
     senha_hash = hashlib.sha256(nova_senha.encode()).hexdigest()
@@ -490,14 +484,6 @@ def atualizar_senha(email, nova_senha):
         st.error(f"Erro ao atualizar a senha: {e}")
         return False
 
-
-
-
-
-
-
-
-
 # Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
@@ -506,35 +492,11 @@ def login():
     senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
     if st.button('Entrar'):
         if verificar_usuario(email, senha):
-            st.success('Login bem-sucedido!')
+            
             st.session_state.pagina = 'home'
             
         else:
             st.error('E-mail ou senha incorretos.')
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-        
-      
-
-
-
-
-
-
-
 
 # Função de cadastro
 def cadastro():
@@ -1046,13 +1008,14 @@ def resetar_senha():
 
 
 
+
+
 def logout():
     #Limpa o estado de sessão do usuario
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
-    st.success("Você saiu com sucesso")
+    st.sucess("Você saiu com sucesso")
     st.experimental_rerun()
-
 
 
 
@@ -1064,7 +1027,7 @@ def home_page():
 
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
-        
+
         #Adicionar botão de logout na barra lateral
         if st.sidebar.button('Logout'):
             logout()
@@ -1324,7 +1287,7 @@ def home_page():
         st.title('Todas as Reservas')
         exibir_reservas_interativas()
 
-        else:
+    else:
         menu_autenticacao = st.sidebar.radio('Selecione uma opção', ['Login', 'Cadastro', 'Recuperar Senha'])
 
         if menu_autenticacao == 'Login':
@@ -1354,5 +1317,3 @@ else:
             st.session_state.pagina = 'home'
             st.query_params(pagina='home')
     else:
-        home_page()
-
