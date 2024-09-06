@@ -502,7 +502,7 @@ def login():
         else:
             st.error('E-mail ou senha incorretos.')
         # Quando o formulário for submetido
-    if submit_button:
+        
         if verificar_usuario(email, senha):
             st.session_state.pagina = 'home'
         else:
