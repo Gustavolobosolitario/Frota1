@@ -504,9 +504,16 @@ def login():
     # Quando o formulário for submetido
     if submit_button:
         if verificar_usuario(email, senha):
-            st.session_state.pagina = 'home'
+           
+            
+
+            
+            st.sucess('Login realizado')
         else:
-            st.error('E-mail ou senha incorretos.')
+            st.error('E-mail ou senha incorretos.'
+
+
+          st.session_state.pagina = 'home'
 
         
       
