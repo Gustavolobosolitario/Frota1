@@ -494,23 +494,39 @@ def login():
     st.subheader('Login')
 
     # Cria um formulário de login
-    with st.form(key='login_form', clear_on_submit=False):
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    with st.form(key='login_form'):
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login')
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login')
 
         # Adiciona um botão de submit dentro do formulário
         submit_button = st.form_submit_button('Entrar')
 
     return email, senha, submit_button
 
-# Função para lidar com a autenticação e lógica de login
+# Função para lidar com o clique do botão de login
 def botao_entrar(email, senha, submit_button):
-    if submit_button:
-        if verificar_usuario(email, senha):
+    if submit_button:  # Verifica se o botão foi clicado
+        if verificar_usuario(email, senha):  # Chama a função de verificação
             st.success('Login realizado com sucesso!')
             st.session_state.pagina = 'home'
         else:
             st.error('E-mail ou senha incorretos.')
+
+# Controle da página exibida
+if 'pagina' not in st.session_state:
+    st.session_state.pagina = 'login'  # Página inicial
+
+if st.session_state.pagina == 'login':
+    # Exibe o formulário de login
+    email, senha, submit_button = login()
+    # Lida com o clique no botão de login
+    botao_entrar(email, senha, submit_button)
+elif st.session_state.pagina == 'home':
+    # Exibe a página inicial
+    st.write("Bem-vindo à home!")
+    if st.sidebar.button('Logout', key='logout_button'):
+        logout()
+
 
 
 
