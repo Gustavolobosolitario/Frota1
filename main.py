@@ -489,7 +489,7 @@ def atualizar_senha(email, nova_senha):
 
 
 # Função de login
-def login(border=True):
+def login(border=False):
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
