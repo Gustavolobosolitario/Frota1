@@ -1035,10 +1035,11 @@ def logout():
     st.session_state.pagina = 'login'
     st.success("Você saiu com sucesso")
 
-    # Adiciona uma condição para garantir que st.experimental_rerun() seja chamado uma vez
-    if 'logged_out' not in st.session_state:
-        st.session_state.logged_out = True
-        st.experimental_rerun()  # Atualiza a página automaticamente
+    # Não usar st.experimental_rerun() e redirecionar de forma manual
+    st.write("Redirecionando para a página de login...")
+    # Exibe a página de login diretamente
+    login()
+
 
 
 
