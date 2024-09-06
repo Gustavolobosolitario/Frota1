@@ -508,26 +508,25 @@ def login():
 
             # Botão de submit para realizar login
             submit_button = st.form_submit_button('Entrar')
-        
+
         # Ação de login automático se o botão for clicado
         if submit_button:
             if verificar_usuario(email, senha):  # Verifica as credenciais do usuário
                 st.success('Login realizado com sucesso!')
-                st.session_state.pagina = 'home'
-                st.experimental_rerun()  # Recarrega a página para refletir o login
+                # Define a variável de controle para redirecionamento
+                st.session_state.login_successful = True
             else:
                 st.error('E-mail ou senha incorretos.')
-
     else:
         st.success(f"Você já está logado como {st.session_state.nome_completo}")
-        return None, None, None
 
-# Adicionar o redirecionamento para home se estiver logado
-if st.session_state.usuario_logado:
+# Se o login foi bem-sucedido, recarrega a página
+if st.session_state.get('login_successful'):
     st.experimental_rerun()
 
 # Executa o login ou redireciona
 login()
+
 
 
 
