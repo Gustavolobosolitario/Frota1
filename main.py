@@ -510,7 +510,7 @@ def login():
             
             st.sucess('Login realizado')
         else:
-            st.error('E-mail ou senha incorretos.'
+            st.error('E-mail ou senha incorretos.')
 
 
           st.session_state.pagina = 'home'
