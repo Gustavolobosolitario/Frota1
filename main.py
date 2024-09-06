@@ -13,6 +13,7 @@ from datetime import datetime
 import random
 import string
 import warnings
+import uuid  # Para gerar uma chave única
 
 
 # Conectar ao banco de dados SQLite
@@ -490,13 +491,15 @@ def atualizar_senha(email, nova_senha):
 
 
 
-# Função para exibir o formulário de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
-    # Cria um formulário de login
-    with st.form(key='login_form_unique'):  # Use uma key única para evitar conflitos
+    # Gera uma chave única para o formulário
+    unique_key = f'login_form_{str(uuid.uuid4())}'  
+
+    # Cria um formulário de login com uma chave exclusiva
+    with st.form(key=unique_key):  # Key única para evitar conflitos
         email = st.text_input('E-mail', placeholder='Digite seu e-mail', key='email_login')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha', key='senha_login')
 
