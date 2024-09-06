@@ -1336,19 +1336,13 @@ def home_page():
         st.title('Todas as Reservas')
         exibir_reservas_interativas()
 
-# Exibe a página de reservas se o usuário estiver logado
-def home_page():
-    if st.session_state.usuario_logado:
-        criar_tabelas()  # Chama função para criar tabelas se necessário
-        st.sidebar.header(f'Bem-vindo, {st.session_state.nome_completo}')
-        
-        if st.sidebar.button('Logout'):
-            logout()
-        
-        st.title('Reservas')
-        exibir_reservas_interativas()
+# Função principal para controle da página
+def main():
+    if st.session_state.get('pagina') == 'reservas':
+        home_page()
     else:
-        st.warning('Por favor, faça login para acessar as reservas.')
+        login()
+
 
     else:
         menu_autenticacao = st.sidebar.radio('Selecione uma opção', ['Login', 'Cadastro', 'Recuperar Senha'])
