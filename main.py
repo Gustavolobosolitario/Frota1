@@ -503,8 +503,6 @@ def atualizar_senha(email, nova_senha):
 
 
 
-# Função para exibir o formulário de login, mas desaparece se o usuário estiver logado
-import streamlit as st
 
 # Função para exibir o formulário de login, mas desaparece se o usuário estiver logado
 def login():
@@ -528,18 +526,9 @@ def login():
                 st.error('E-mail ou senha incorretos.')
     else:
         st.success(f"Você já está logado como {st.session_state.nome_completo}")
-        st.write("Redirecionando para a página de reservas...")
+        
 
-        # Chama a função da página de reservas
-        pagina_reservas()
 
-# Função simulada para exibir a página de reservas
-def pagina_reservas():
-    st.subheader("Página de Reservas")
-    st.write("Aqui você pode ver e gerenciar suas reservas.")
-
-# Chama a função de login
-login()
 
 
 
