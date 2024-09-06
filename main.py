@@ -520,12 +520,6 @@ def login():
     else:
         st.success(f"Você já está logado como {st.session_state.nome_completo}")
 
-# Se o login foi bem-sucedido, recarrega a página
-if st.session_state.get('login_successful'):
-    st.experimental_rerun()
-
-# Executa o login ou redireciona
-login()
 
 
 
