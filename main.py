@@ -14,7 +14,7 @@ from datetime import datetime
 import random
 import string
 import warnings
-import uuid  # Para gerar uma chave única
+
 
 
 # Conectar ao banco de dados SQLite
