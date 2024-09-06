@@ -484,19 +484,32 @@ def atualizar_senha(email, nova_senha):
         st.error(f"Erro ao atualizar a senha: {e}")
         return False
 
+
+
+
+
+
+
 # Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
     email = st.text_input('E-mail', placeholder='Digite seu e-mail')
     senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-    if st.button('Entrar'):
+if st.button('Entrar'):
         if verificar_usuario(email, senha):
             
             st.session_state.pagina = 'home'
             
         else:
             st.error('E-mail ou senha incorretos.')
+
+
+
+
+
+
+
 
 # Função de cadastro
 def cadastro():
