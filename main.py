@@ -1047,8 +1047,6 @@ def logout():
 
 
 def home_page():
-    st.title("Bem-vindo ao Home!")
-    st.write("Você está logado.")
     criar_tabelas()
     
     
