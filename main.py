@@ -511,7 +511,7 @@ def login():
         if verificar_usuario(email, senha):
             st.session_state.pagina = 'home'
             st.success('Login realizado com sucesso!')
-            st.experimental_rerun()
+            
         else:
             st.error('E-mail ou senha incorretos.')
 
