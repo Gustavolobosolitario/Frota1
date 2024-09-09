@@ -500,7 +500,7 @@ def login():
     st.subheader('Login')
 
     # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form',clear_on_submit=True, border=False):
+    with st.form(key='login_form'):
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
@@ -511,7 +511,6 @@ def login():
         if verificar_usuario(email, senha):
             st.session_state.pagina = 'home'
             st.success('Login realizado com sucesso!')
-            
         else:
             st.error('E-mail ou senha incorretos.')
 
