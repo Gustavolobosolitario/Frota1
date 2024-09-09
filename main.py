@@ -1048,8 +1048,16 @@ def logout():
 
 def home_page():
     criar_tabelas()
+    st.title("Bem-vindo ao Home!")
+    st.write("Você está logado.")
     
     st.sidebar.image('logo.png', use_column_width=True)
+
+    # Renderiza a página com base no estado de login
+if st.session_state.pagina == 'login':
+    login()
+elif st.session_state.pagina == 'home':
+    home()
 
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
