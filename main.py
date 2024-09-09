@@ -496,7 +496,7 @@ def login():
     st.subheader('Login')
 
     # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form'):
+    with st.form(key='login_form', border=False):
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
