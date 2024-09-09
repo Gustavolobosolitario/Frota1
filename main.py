@@ -1040,21 +1040,10 @@ def logout():
 
 
 def home_page():
-    st.title("Página Inicial")
-    st.write("Você está logado.")
-    if st.button('Logout'):
-        st.session_state.pagina = 'login'
     criar_tabelas()
-    
     
     st.sidebar.image('logo.png', use_column_width=True)
 
-    # Renderiza a página com base no estado de login
-        # Condicional para alternar entre páginas
-    if st.session_state.pagina == 'login':
-        login()
-    else:
-        home()
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
 
@@ -1347,4 +1336,5 @@ else:
             st.session_state.pagina = 'home'
             st.query_params(pagina='home')
     else:
+
         home_page()
