@@ -1050,11 +1050,11 @@ def home_page():
     st.sidebar.image('logo.png', use_column_width=True)
 
     # Renderiza a página com base no estado de login
-    # Condicional para alternar entre páginas
-if st.session_state.pagina == 'login':
-    login()
-else:
-    home()
+        # Condicional para alternar entre páginas
+    if st.session_state.pagina == 'login':
+        login()
+    else:
+        home()
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
 
