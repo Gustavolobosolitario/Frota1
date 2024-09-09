@@ -496,16 +496,24 @@ def atualizar_senha(email, nova_senha):
 
 # Função de login
 def login():
+    st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
-    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    # Usando o form para detectar o "Enter" ou clique
+    with st.form(key='login_form',clear_on_submit=True, border=False):
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
-    if st.button('Entrar'):
+        # Esse botão será disparado tanto com o clique quanto com "Enter"
+        submit_button = st.form_submit_button('Entrar')
+
+    if submit_button:
         if verificar_usuario(email, senha):
             st.session_state.pagina = 'home'
+            st.success('Login realizado com sucesso!')
+            
         else:
-            st.error('E-mail ou senha incorretos.')
+            st.error('E-mail ou senha incorretos.')
 
   
 
