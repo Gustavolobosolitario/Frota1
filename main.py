@@ -1054,12 +1054,6 @@ def home_page():
         #Adicionar botão de logout na barra lateral
         if st.sidebar.button('Logout'):
             logout()
-
-    # Controle de navegação entre páginas baseado na sessão
-    if st.session_state.usuario_logado:
-        home()
-    else:
-        login()
         
 
         with st.container(border=True):
