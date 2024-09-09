@@ -496,21 +496,14 @@ def atualizar_senha(email, nova_senha):
 
 # Função de login
 def login():
-    st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
-    # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form'):
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
-        # Esse botão será disparado tanto com o clique quanto com "Enter"
-        submit_button = st.form_submit_button('Entrar')
-
-    if submit_button:
+    if st.button('Entrar'):
         if verificar_usuario(email, senha):
             st.session_state.pagina = 'home'
-            st.success('Login realizado com sucesso!')
         else:
             st.error('E-mail ou senha incorretos.')
 
@@ -1047,17 +1040,21 @@ def logout():
 
 
 def home_page():
+    st.title("Página Inicial")
+    st.write("Você está logado.")
+    if st.button('Logout'):
+        st.session_state.pagina = 'login'
     criar_tabelas()
     
     
     st.sidebar.image('logo.png', use_column_width=True)
 
     # Renderiza a página com base no estado de login
-    if st.session_state.pagina == 'login':
-        login()
-    elif st.session_state.pagina == 'home':
-        home()
-
+    # Condicional para alternar entre páginas
+if st.session_state.pagina == 'login':
+    login()
+else:
+    home()
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
 
