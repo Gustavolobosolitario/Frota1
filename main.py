@@ -496,24 +496,20 @@ def atualizar_senha(email, nova_senha):
 
 # Função de login
 def login():
-    st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
-    # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form',clear_on_submit=True, border=False):
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    # Captura email e senha
+    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
-        # Esse botão será disparado tanto com o clique quanto com "Enter"
-        submit_button = st.form_submit_button('Entrar')
-
-    if submit_button:
+    # Quando o botão é clicado, verifica as credenciais
+    if st.button('Entrar'):
         if verificar_usuario(email, senha):
-            st.session_state.pagina = 'home'
+            st.session_state.usuario_logado = email
             st.success('Login realizado com sucesso!')
-            
         else:
-            st.error('E-mail ou senha incorretos.')
+            st.error('E-mail ou senha incorretos.')
+
 
   
 
@@ -1058,7 +1054,12 @@ def home_page():
         #Adicionar botão de logout na barra lateral
         if st.sidebar.button('Logout'):
             logout()
-            
+
+    # Controle de navegação entre páginas baseado na sessão
+    if st.session_state.usuario_logado:
+        home()
+    else:
+        login()
         
 
         with st.container(border=True):
