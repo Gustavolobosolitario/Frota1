@@ -122,57 +122,39 @@ def recuperar_senha(email):
 
     
     
-    
 def resetar_senha():
     st.title('Redefinir Senha')
-    
-    # Capture os parâmetros da URL usando st.query_params
-    params = st.experimental_get_query_params
+    query_params = st.experimental_get_query_params()
+    token = query_params.get('token', [None])[0]
 
-    
-    # Exiba todos os parâmetros para depuração
-    st.write(f'Todos os parâmetros da URL: {st.experimental_get_query_params}')
-    
-    # Captura o token corretamente da lista
-    token = st.experimental_get_query_params('token', [None])[0]
-    
-    # Remova espaços em branco e verifique o token
-    token = token.strip() if token else None
-    
-    # Verifique o valor do token capturado
-    st.write(f'Token capturado da URL: {token}')
-    
     if not token:
         st.error("Token inválido ou expirado.")
         return
     
-    # Adicione depuração para a consulta SQL
-    st.write(f'Executando consulta com token: {token}')
-    
-    # Busca o email associado ao token
+    # Busque o email associado ao token
     with sqlite3.connect('reservas.db') as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT email FROM tokens WHERE token = ?', (token,))
         result = cursor.fetchone()
     
-    st.write(f'Resultado da consulta: {result}')
-    
     if result:
         email = result[0]
         st.text_input("E-mail", value=email, disabled=True)
-        
-        nova_senha = st.text_input("Nova Senha", type="password", placeholder="Digite sua nova senha")
-        confirmar_senha = st.text_input("Confirmar Senha", type="password", placeholder="Confirme sua nova senha")
-
-        if st.button("Redefinir Senha"):
-            if nova_senha != confirmar_senha:
-                st.error("As senhas não correspondem.")
-            else:
-                if atualizar_senha_com_token(token, nova_senha):
-                    st.success("Senha redefinida com sucesso!")
-                    st.info("Agora você pode fazer login com sua nova senha.")
     else:
         st.error("Token inválido ou expirado.")
+        return
+
+    nova_senha = st.text_input("Nova Senha", type="password", placeholder="Digite sua nova senha")
+    confirmar_senha = st.text_input("Confirmar Senha", type="password", placeholder="Confirme sua nova senha")
+
+    if st.button("Redefinir Senha"):
+        if nova_senha != confirmar_senha:
+            st.error("As senhas não correspondem.")
+        else:
+            if atualizar_senha_com_token(token, nova_senha):
+                st.success("Senha redefinida com sucesso!")
+                st.info("Agora você pode fazer login com sua nova senha.")
+
 
 
 
