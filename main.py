@@ -452,22 +452,27 @@ def adicionar_usuario(nome_completo, email, senha):
 
 # Função para verificar o usuário
 def verificar_usuario(email, senha):
-    # Verifica se o email tem o domínio correto
-    if not email.endswith('@vilaurbe.com.br'):
-        st.error("Acesso restrito. Apenas colaboradores são permitidos.")
-        return False
-    
     senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+    st.write(f"Hash da senha digitada: {senha_hash}")
+    
     with sqlite3.connect('reservas.db') as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
+        cursor.execute('SELECT nome_completo, email, senha FROM usuarios WHERE email = ?', (email,))
         usuario = cursor.fetchone()
+        
         if usuario:
-            st.session_state.usuario_logado = usuario[1]
-            st.session_state.nome_completo = usuario[0]
-            return True
+            st.write(f"Hash da senha armazenada no banco: {usuario[2]}")
+            if usuario[2] == senha_hash:
+                st.session_state.usuario_logado = usuario[1]
+                st.session_state.nome_completo = usuario[0]
+                return True
+            else:
+                st.error('Senha incorreta.')
+                return False
         else:
+            st.error('Usuário não encontrado.')
             return False
+
 
 
 
@@ -487,6 +492,7 @@ def atualizar_senha(email, nova_senha):
     except sqlite3.Error as e:
         st.error(f"Erro ao atualizar a senha: {e}")
         return False
+
 
 
 
