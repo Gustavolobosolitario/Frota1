@@ -514,12 +514,15 @@ def login():
         submit_button = st.form_submit_button('Entrar')
 
     if submit_button:
-        if verificar_usuario(email, senha):
-            st.session_state.pagina = 'home'
-            st.success('Login realizado com sucesso!')
-            
-        else:
-            st.error('E-mail ou senha incorretos.')
+    # Verifica diretamente o usuário
+    login_efetuado = verificar_usuario(email, senha)
+    if login_efetuado:
+        # Atualiza diretamente a página para 'home' ao fazer o login
+        st.session_state.pagina = 'home'
+        st.experimental_rerun()  # Força a atualização da página automaticamente
+    else:
+        st.error('E-mail ou senha incorretos.')
+
 
 
   
