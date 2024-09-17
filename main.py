@@ -53,11 +53,9 @@ if 'usuario_logado' not in st.session_state:
 
 
 
-# Controle de páginas baseado no estado da sessão
-if st.session_state.pagina == 'home':
-    home_page()  # Esta função deve renderizar a página home corretamente
-elif st.session_state.pagina == 'login':
-    login()
+# Certifique-se de que 'pagina' existe no session_state
+if 'pagina' not in st.session_state:
+    st.session_state.pagina = 'login'  # ou a página inicial desejada
 
     
 # Inicializa a variável de controle de nome completo
