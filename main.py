@@ -506,7 +506,7 @@ def login():
     st.subheader('Login')
 
     # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form_unique'):  # Certifique-se de que a chave é única
+    with st.form(key='login_form_unique_1'):  # Assegura que essa chave é única
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
@@ -527,10 +527,11 @@ if 'pagina' not in st.session_state:
     st.session_state.pagina = 'login'
 
 if st.session_state.pagina == 'home':
-    # Aqui você exibe a página home
+    # Exibe a página home
     st.write("Bem-vindo à página inicial!")
 elif st.session_state.pagina == 'login':
     login()
+
 
 
 
