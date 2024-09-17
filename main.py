@@ -499,6 +499,7 @@ def atualizar_senha(email, nova_senha):
 
 
 
+
 # Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
@@ -515,10 +516,20 @@ def login():
     if submit_button:
         login_efetuado = verificar_usuario(email, senha)
         if login_efetuado:
+            # Altera o estado da página sem forçar recarga
             st.session_state.pagina = 'home'
-            st.experimental_rerun()  # Força a recarga da página para refletir a mudança
-        else:
-            st.error('E-mail ou senha incorretos.')
+            st.success('Login realizado com sucesso!')
+
+# Controle de páginas baseado no estado da sessão
+if 'pagina' not in st.session_state:
+    st.session_state.pagina = 'login'
+
+if st.session_state.pagina == 'home':
+    # Aqui você exibe a página home
+    st.write("Bem-vindo à página inicial!")
+elif st.session_state.pagina == 'login':
+    login()
+
 
 
 
