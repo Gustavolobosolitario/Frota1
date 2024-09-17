@@ -527,20 +527,24 @@ def login():
             if login_efetuado:
                 st.session_state.pagina = 'home'
                 st.success('Login realizado com sucesso!')
-                st.session_state['login_form_rendered'] = False  # Reseta para futuras renderizações
+                st.experimental_rerun()  # Recarrega a página para refletir a mudança de estado
             else:
                 st.error('E-mail ou senha incorretos.')
                 st.session_state['login_form_rendered'] = False  # Permite nova tentativa
+
 
 # Controle de páginas baseado no estado da sessão
 if 'pagina' not in st.session_state:
     st.session_state.pagina = 'login'
 
+# Exibição da página com base no estado atual
 if st.session_state.pagina == 'home':
     # Exibe a página home
-    st.write("Bem-vindo à página inicial!")
+    st.write("Bem-vindo à página de reservas!")
+    home_page()  # Chamando a função home_page para exibir a área de reserva
 elif st.session_state.pagina == 'login':
     login()
+
 
 
 
