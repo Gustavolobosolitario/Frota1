@@ -4,43 +4,35 @@ from datetime import datetime, time
 import sqlite3
 import hashlib
 import smtplib
-import os
 import base64
 from email.mime.text import MIMEText
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime
 import random
 import string
 import warnings
 
-
 # Conectar ao banco de dados SQLite
-conn = sqlite3.connect('reservas.db')
+def conectar_banco():
+    conn = sqlite3.connect('reservas.db')
+    return conn
+
+conn = conectar_banco()
 cursor = conn.cursor()
 
-print("st_aggrid importado com sucesso!")
-
-
-# Suprime especificamente a mensagem de aviso do Streamlit
+# Suprime mensagens de aviso do Streamlit
 warnings.filterwarnings("ignore", message="Please replace st.experimental_get_query_params with st.query_params.")
 
 # Configura a página do Streamlit - ESSA LINHA DEVE SER A PRIMEIRA CHAMADA AO STREAMLIT
 st.set_page_config(layout='wide', page_title="Frota Vilaurbe", page_icon=":car:")
 
-
-
-
 # Função para gerar um token aleatório
 def gerar_token_tamanho_aleatorio(tamanho=20):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=tamanho))
 
-
 # Inicializando variáveis de sessão para controlar o recarregamento
 if 'atualizar_tabela' not in st.session_state:
     st.session_state.atualizar_tabela = False
-
-
 
 # Inicializa o cache de reservas se não existir
 if 'reservas' not in st.session_state:
@@ -50,23 +42,16 @@ if 'reservas' not in st.session_state:
 if 'usuario_logado' not in st.session_state:
     st.session_state.usuario_logado = None
 
-
-
-
 # Certifique-se de que 'pagina' existe no session_state
 if 'pagina' not in st.session_state:
     st.session_state.pagina = 'login'  # ou a página inicial desejada
 
-    
 # Inicializa a variável de controle de nome completo
 if 'nome_completo' not in st.session_state:
     st.session_state.nome_completo = None
 
-
-
 # Função de login
 def login():
-    st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
     # Verifique se o formulário já foi renderizado
@@ -96,18 +81,31 @@ def login():
                 st.session_state['login_form_rendered'] = False  # Permite nova tentativa
 
 
+# Função para verificar usuário (a ser definida adequadamente)
+def verificar_usuario(email, senha):
+    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+    with conectar_banco() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
+        usuario = cursor.fetchone()
+    if usuario:
+        st.session_state.usuario_logado = usuario[1]
+        st.session_state.nome_completo = usuario[0]
+        return True
+    return False
+
 # Controle de páginas baseado no estado da sessão
 if 'pagina' not in st.session_state:
     st.session_state.pagina = 'login'
 
 # Exibição da página com base no estado atual
 if st.session_state.pagina == 'home':
-    # Exibe a página home
     st.write("Bem-vindo à página de reservas!")
-    home_page()  # Chamando a função home_page para exibir a área de reserva
+    # Chame a função da home page (você deve definir essa função em seu código)
+    home_page()
 elif st.session_state.pagina == 'login':
     login()
-    
+
     
     
 # Função para recuperar a senha
@@ -499,28 +497,7 @@ def adicionar_usuario(nome_completo, email, senha):
     except Exception as e:
         st.error(f'Erro ao adicionar usuário: {e}')
 
-# Função para verificar o usuário
-def verificar_usuario(email, senha):
-    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
-    st.write(f"Hash da senha digitada: {senha_hash}")
-    
-    with sqlite3.connect('reservas.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT nome_completo, email, senha FROM usuarios WHERE email = ?', (email,))
-        usuario = cursor.fetchone()
-        
-        if usuario:
-            st.write(f"Hash da senha armazenada no banco: {usuario[2]}")
-            if usuario[2] == senha_hash:
-                st.session_state.usuario_logado = usuario[1]
-                st.session_state.nome_completo = usuario[0]
-                return True
-            else:
-                st.error('Senha incorreta.')
-                return False
-        else:
-            st.error('Usuário não encontrado.')
-            return False
+
 
 
 
