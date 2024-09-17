@@ -50,13 +50,18 @@ if 'reservas' not in st.session_state:
 if 'usuario_logado' not in st.session_state:
     st.session_state.usuario_logado = None
 
+# Inicializa a variável de controle da página atual (somente uma vez)
 if 'pagina' not in st.session_state:
-    st.session_state.pagina = 'login'
+    st.session_state.pagina = 'login'  # Começa na página de login
 
 
-# Inicializa a variável de controle da página atual
-if 'pagina' not in st.session_state:
-    st.session_state.pagina = 'home'
+
+# Controle de páginas baseado no estado da sessão
+if st.session_state.pagina == 'home':
+    home_page()  # Esta função deve renderizar a página home corretamente
+elif st.session_state.pagina == 'login':
+    login()
+
     
 # Inicializa a variável de controle de nome completo
 if 'nome_completo' not in st.session_state:
@@ -1082,6 +1087,8 @@ def logout():
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
     st.success("Você saiu com sucesso")
+    st.experimental_rerun()
+
 
    
 
