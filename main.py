@@ -506,22 +506,23 @@ def login():
     st.subheader('Login')
 
     # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form',clear_on_submit=True, border=False):
+    with st.form(key='login_form', clear_on_submit=True):
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
         # Esse botão será disparado tanto com o clique quanto com "Enter"
         submit_button = st.form_submit_button('Entrar')
 
+    # Certifique-se que o código dentro do if submit_button está corretamente indentado
     if submit_button:
-    # Verifica diretamente o usuário
-    login_efetuado = verificar_usuario(email, senha)
-    if login_efetuado:
-        # Atualiza diretamente a página para 'home' ao fazer o login
-        st.session_state.pagina = 'home'
-        st.experimental_rerun()  # Força a atualização da página automaticamente
-    else:
-        st.error('E-mail ou senha incorretos.')
+        login_efetuado = verificar_usuario(email, senha)
+        if login_efetuado:
+            st.session_state.pagina = 'home'
+            st.success('Login realizado com sucesso!')
+            st.experimental_rerun()  # Atualiza a página automaticamente
+        else:
+            st.error('E-mail ou senha incorretos.')
+
 
 
 
