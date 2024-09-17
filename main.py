@@ -108,7 +108,9 @@ if st.session_state.pagina == 'home':
     st.write("Bem-vindo à página de reservas!")
     home_page()  # Chamando a função home_page para exibir a área de reserva
 elif st.session_state.pagina == 'login':
+if __name__ == "__main__":
     login()
+    
     
     
 # Função para recuperar a senha
