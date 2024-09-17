@@ -1398,3 +1398,7 @@ else:
     else:
 
         home_page()
+
+# Bloco para garantir execução correta
+if __name__ == "__main__":
+    login()
