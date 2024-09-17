@@ -36,6 +36,11 @@ def gerar_token_tamanho_aleatorio(tamanho=20):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=tamanho))
 
 
+# Inicializando variáveis de sessão para controlar o recarregamento
+if 'atualizar_tabela' not in st.session_state:
+    st.session_state.atualizar_tabela = False
+
+
 
 # Inicializa o cache de reservas se não existir
 if 'reservas' not in st.session_state:
@@ -44,6 +49,10 @@ if 'reservas' not in st.session_state:
 # Inicializa a variável de controle de usuário logado
 if 'usuario_logado' not in st.session_state:
     st.session_state.usuario_logado = None
+
+if 'pagina' not in st.session_state:
+    st.session_state.pagina = 'login'
+
 
 # Inicializa a variável de controle da página atual
 if 'pagina' not in st.session_state:
@@ -58,7 +67,7 @@ if 'nome_completo' not in st.session_state:
 def recuperar_senha(email):
     token = gerar_token_tamanho_aleatorio()
     salvar_token_no_banco(email, token)
-    link = f'https://frota1.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
+    link = f'https://frotavilaurbe.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
     enviar_email_recovery(email, link)
     
     
@@ -213,17 +222,14 @@ def resetar_senha():
 
 
 
-
-    
     
     
         
 def recuperar_senha(email):
     token = gerar_token_tamanho_aleatorio()
     salvar_token_no_banco(email, token)
-    link = f'https://frota1.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
+    link = f'https://frotavilaurbe.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
     enviar_email_recovery(email, link)
-
 
 
 
@@ -235,7 +241,7 @@ def enviar_notificacao_reserva(email_usuario, dtRetirada, hrRetirada, dtDevoluca
     porta = 587
     remetente = 'ti@vilaurbe.com.br'
     senha = 'Vilaurbe2024!'
-    destinatario = 'analytics@vilaurbe.com.br'  # Destinatário da notificação
+    destinatario = 'adm02@vilaurbe.com.br'  # Destinatário da notificação
 
     # Formatação das datas para o formato DD/MM/YYYY
     dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
@@ -280,40 +286,41 @@ def enviar_notificacao_reserva(email_usuario, dtRetirada, hrRetirada, dtDevoluca
 
 
 
-def enviar_email_reserva(destinatario, nome, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade):
+# Função para enviar notificação de cancelamento por email
+def enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
     servidor_smtp = 'smtp.office365.com'
     porta = 587
     remetente = 'ti@vilaurbe.com.br'
     senha = 'Vilaurbe2024!'
+    destinatario = 'adm02@vilaurbe.com.br'  # Destinatário da notificação
+
+    # Formatação das datas para o formato DD/MM/YYYY
+    dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
+    dtDevolucao_formatada = dtDevolucao.strftime('%d/%m/%Y')
+
+    assunto = 'Cancelamento de Reserva'
+    corpo = f"""
+    Prezado(a) {email_usuario},
+
+    Informamos que a sua reserva foi cancelada com sucesso. Seguem os detalhes da reserva cancelada:
+
+    - Data de Retirada: {dtRetirada_formatada}
+    - Hora de Retirada: {hrRetirada.strftime('%H:%M')}
+    - Data de Devolução: {dtDevolucao_formatada}
+    - Hora de Devolução: {hrDevolucao.strftime('%H:%M')}
+    - Veículo: {carro}
+    - Destinos: {destinos}
+
+    Atenciosamente,
+
+    Equipe Frota Vilaurbe
+    """
 
     try:
-        # Formata as datas para o formato DD/MM/YYYY
-        dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
-        dtDevolucao_formatada = dtDevolucao.strftime('%d/%m/%Y')
-
         msg = MIMEMultipart()
         msg['From'] = remetente
         msg['To'] = destinatario
-        msg['Subject'] = 'Confirmação de Reserva'
-
-        corpo = f'''
-        Prezado(a) {nome},
-
-        Informamos que sua reserva foi confirmada com sucesso. Seguem os detalhes da sua reserva:
-
-        - Data de Retirada: {dtRetirada_formatada}
-        - Hora de Retirada: {hrRetirada.strftime('%H:%M')}
-        - Data de Devolução: {dtDevolucao_formatada}
-        - Hora de Devolução: {hrDevolucao.strftime('%H:%M')}
-        - Veículo: {carro}
-        - Cidade de Destino: {cidade}
-
-        Agradecemos por escolher a Frota Vilaurbe. Estamos à disposição para qualquer esclarecimento adicional.
-
-        Atenciosamente,
-
-        Equipe Frota Vilaurbe
-        '''
+        msg['Subject'] = assunto
 
         msg.attach(MIMEText(corpo, 'plain'))
 
@@ -321,10 +328,54 @@ def enviar_email_reserva(destinatario, nome, dtRetirada, hrRetirada, dtDevolucao
             server.starttls()
             server.login(remetente, senha)
             server.sendmail(remetente, destinatario, msg.as_string())
-        
-        print("Email de confirmação de reserva enviado com sucesso!")
+
+        print("Notificação de cancelamento enviada com sucesso!")
     except Exception as e:
-        print(f'Erro ao enviar email de reserva: {e}')
+        print(f"Erro ao enviar notificação de cancelamento: {str(e)}")
+
+
+    # Formatação das datas para o formato DD/MM/YYYY
+    dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
+    dtDevolucao_formatada = dtDevolucao.strftime('%d/%m/%Y')
+
+    assunto = 'Cancelamento de Reserva'
+    corpo = f"""
+    Prezado(a) {email_usuario},
+
+    Informamos que a sua reserva foi cancelada com sucesso. Seguem os detalhes da reserva cancelada:
+
+    - Data de Retirada: {dtRetirada_formatada}
+    - Hora de Retirada: {hrRetirada.strftime('%H:%M')}
+    - Data de Devolução: {dtDevolucao_formatada}
+    - Hora de Devolução: {hrDevolucao.strftime('%H:%M')}
+    - Veículo: {carro}
+    - Destinos: {destinos}
+
+    Atenciosamente,
+
+    Equipe Frota Vilaurbe
+    """
+
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = remetente
+        msg['To'] = destinatario
+        msg['Subject'] = assunto
+
+        msg.attach(MIMEText(corpo, 'plain'))
+
+        with smtplib.SMTP(servidor_smtp, porta) as server:
+            server.starttls()
+            server.login(remetente, senha)
+            server.sendmail(remetente, destinatario, msg.as_string())
+
+        print("Notificação de cancelamento enviada com sucesso!")
+    except Exception as e:
+        print(f"Erro ao enviar notificação de cancelamento: {str(e)}")
+
+
+
+
 
 
 
@@ -437,19 +488,42 @@ def atualizar_senha(email, nova_senha):
         st.error(f"Erro ao atualizar a senha: {e}")
         return False
 
+
+
+
+
+
+
 # Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
-    email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-    senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-    if st.button('Entrar'):
+
+    # Usando o form para detectar o "Enter" ou clique
+    with st.form(key='login_form',clear_on_submit=True, border=False):
+        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+
+        # Esse botão será disparado tanto com o clique quanto com "Enter"
+        submit_button = st.form_submit_button('Entrar')
+
+    if submit_button:
         if verificar_usuario(email, senha):
-            st.success('Login bem-sucedido!')
             st.session_state.pagina = 'home'
+            st.success('Login realizado com sucesso!')
             
         else:
-            st.error('E-mail ou senha incorretos.')
+            st.error('E-mail ou senha incorretos.')
+
+
+  
+
+
+
+
+
+
+
 
 # Função de cadastro
 def cadastro():
@@ -507,20 +581,26 @@ def arredondar_para_intervalo(time_obj, intervalo_mins=30):
 # Função para adicionar uma nova reserva
 def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
     try:
-        st.write("Preparando para salvar a reserva...")
         destino_str = ', '.join(destinos) if destinos else ''
-        with sqlite3.connect('reservas.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute('''INSERT INTO reservas 
-                              (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                           (st.session_state.nome_completo, st.session_state.usuario_logado, 
-                            dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
-                            dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
-                            carro, destino_str, 'Agendado'))
-            conn.commit()
-        st.success("Reserva realizada com sucesso!")
-        st.write("Reserva salva no banco de dados.")
+        if veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
+            with sqlite3.connect('reservas.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute('''INSERT INTO reservas 
+                                  (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
+                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                               (st.session_state.nome_completo, st.session_state.usuario_logado, 
+                                dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
+                                dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
+                                carro, destino_str, 'Agendado'))
+                conn.commit()
+            enviar_notificacao_reserva(st.session_state.nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destino_str)
+            st.success("Reserva realizada com sucesso!")
+            # Marcar a página para atualização
+            st.session_state.atualizar_tabela = True
+            st.experimental_rerun()  # Atualiza a página automaticamente
+        
+        else:
+            st.error("O veículo já está reservado para o período selecionado.")
     except sqlite3.Error as e:
         st.error(f"Erro ao adicionar reserva: {e}")
     except Exception as e:
@@ -555,7 +635,7 @@ def estilizar_reservas(df):
             return ['']*len(df.columns)
     return df.style.apply(lambda x: aplicar_estilo(x['status']), axis=1)
 
-# Função para carregar reservas do banco
+# Função para carregar reservas do banco de dados
 def carregar_reservas_do_banco():
     try:
         with sqlite3.connect('reservas.db') as conn:
@@ -583,11 +663,12 @@ def filtrar_reservas(df, dtRetirada=None, dtDevolucao=None, carros=None, cidades
     return df
 
 # Função para buscar reservas aplicando filtros
+# Função para buscar reservas aplicando filtros
 def buscar_reservas_filtros(dtRetirada=None, dtDevolucao=None, carros=None, cidade=None):
     df_reservas = carregar_reservas_do_banco()
     return filtrar_reservas(df_reservas, dtRetirada, dtDevolucao, carros, cidade,)
 
-# Função para criar DataFrame formatado para visualização
+
 def criar_df_para_visualizacao(df):
     df['dtRetirada'] = pd.to_datetime(df['dtRetirada'], format='%d/%m/%Y')
     df['dtDevolucao'] = pd.to_datetime(df['dtDevolucao'], format='%d/%m/%Y')
@@ -629,7 +710,7 @@ def visualizar_reservas():
 def veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
     df_reservas = carregar_reservas_do_banco()
 
-    # Convertendo as datas das reservas para o formato `datetime.date`
+    # Convertendo as datas das reservas para o formato datetime.date
     df_reservas['dtRetirada'] = pd.to_datetime(df_reservas['dtRetirada'], format='%d/%m/%Y').dt.date
     df_reservas['dtDevolucao'] = pd.to_datetime(df_reservas['dtDevolucao'], format='%d/%m/%Y').dt.date
     df_reservas['hrRetirada'] = pd.to_datetime(df_reservas['hrRetirada'], format='%H:%M:%S').dt.time
@@ -679,7 +760,39 @@ def atualizar_status_reserva(selected_id):
                     st.rerun()
                 else:
                     st.error('Você não tem permissão para cancelar esta reserva.')
-            
+
+
+# Função para cancelar a reserva e enviar notificação
+def cancelar_reserva(selected_id):
+    with sqlite3.connect('reservas.db') as conn:
+        cursor = conn.cursor()
+        
+        # Buscar os detalhes da reserva
+        cursor.execute('SELECT email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade FROM reservas WHERE id = ?', (selected_id,))
+        reserva = cursor.fetchone()
+
+        if reserva:
+            email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos = reserva
+
+            # Verificar se o usuário logado é o mesmo que fez a reserva
+            if email_usuario == st.session_state.usuario_logado:
+                
+                # Atualizar o status para "Cancelado"
+                cursor.execute('UPDATE reservas SET status = "Cancelado" WHERE id = ?', (selected_id,))
+                conn.commit()
+
+                # Enviar notificação de cancelamento
+                enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos)
+                st.success('Reserva cancelada com sucesso! Notificação enviada.')
+
+                # Marcar a página para atualização
+                st.session_state.atualizar_tabela = True
+                st.experimental_rerun()  # Atualiza a página automaticamente
+            else:
+                st.error('Você não tem permissão para cancelar esta reserva.')
+        else:
+            st.error('Reserva não encontrada.')
+
 
 
 
@@ -712,6 +825,46 @@ def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, d
 
 
 
+# Função para exportar reservas para CSV
+def exportar_reservas_para_csv(df_reservas):
+    csv = df_reservas.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()  # Codifica o CSV para base64
+    href = f'<a href="data:file/csv;base64,{b64}" download="reservas.csv">Baixar CSV de todas as reservas</a>'
+    st.markdown(href, unsafe_allow_html=True)
+
+# Função para exibir o botão de exportação apenas para o usuário autorizado
+def exibir_exportar_reservas(df_reservas):
+    # Definir o usuário autorizado
+    usuario_autorizado = 'adm02@vilaurbe.com.br'  # Substitua pelo e-mail do usuário autorizado
+    
+    # Verificar se o usuário logado é o autorizado
+    if 'usuario_logado' in st.session_state:
+        st.write(f"Usuário logado: {st.session_state.usuario_logado}")  # Depuração
+        if st.session_state.usuario_logado == usuario_autorizado:
+            st.write('### Exportar todas as reservas:')
+            exportar_reservas_para_csv(df_reservas)
+    else:
+        st.write("Nenhum usuário logado.")
+
+# Função para buscar reservas no banco de dados
+def buscar_reservas():
+    try:
+        with sqlite3.connect('reservas.db') as conn:
+            query = "SELECT * FROM reservas"
+            df_reservas = pd.read_sql_query(query, conn)
+        return df_reservas
+    except Exception as e:
+        st.error(f"Erro ao buscar reservas: {e}")
+        return pd.DataFrame()  # Retorna DataFrame vazio se houver erro
+
+# Exibir reservas e botão de exportação apenas para o usuário autorizado
+df_reservas = buscar_reservas()
+
+if not df_reservas.empty:
+    exibir_exportar_reservas(df_reservas)
+else:
+    st.warning('Nenhuma reserva disponível.')
+
 
 
 
@@ -721,6 +874,7 @@ def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, d
     
 
 # Função para exibir reservas na interface
+
 def exibir_reservas_interativas():
     df_reservas = carregar_reservas_do_banco()
     
@@ -806,16 +960,7 @@ def verificar_tabelas():
 
 
 # Função para limpar o banco de dados
-def limpar_banco_dados():
-    try:
-        with sqlite3.connect('reservas.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("DROP TABLE IF EXISTS reservas;")
-            cursor.execute("DROP TABLE IF EXISTS usuarios;")
-            conn.commit()
-            criar_tabelas()
-    except sqlite3.OperationalError as e:
-        st.error(f"Erro ao acessar o banco de dados: {e}")
+
         
         
         
@@ -823,7 +968,7 @@ def limpar_banco_dados():
 def recuperar_senha(email):
     token = gerar_token_tamanho_aleatorio()
     salvar_token_no_banco(email, token)
-    link = f'https://frota1.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
+    link = f'https://frotavilaurbe.streamlit.app/?token={token}'  # Substitua pelo domínio do seu app
     enviar_email_recovery(email, link)
 
 
@@ -890,17 +1035,31 @@ def resetar_senha():
 
 
 
+
+
+def logout():
+    #Limpa o estado de sessão do usuario
+    st.session_state.usuario_logado = None
+    st.session_state.pagina = 'login'
+    st.success("Você saiu com sucesso")
+
+   
+
+
+
+
 def home_page():
     criar_tabelas()
     
     st.sidebar.image('logo.png', use_column_width=True)
 
     if st.session_state.get('usuario_logado'):
-        st.sidebar.header('Administração')
-        if st.sidebar.button('Limpar Banco de Dados'):
-            limpar_banco_dados()
-            st.session_state.clear()
-            st.experimental_get_query_params(pagina='home')
+        st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
+
+        #Adicionar botão de logout na barra lateral
+        if st.sidebar.button('Logout'):
+            logout()
+        
 
         with st.container(border=True):
             st.title('Reserva')
@@ -1185,5 +1344,5 @@ else:
             st.session_state.pagina = 'home'
             st.query_params(pagina='home')
     else:
-        home_page()
 
+        home_page()
