@@ -4,43 +4,35 @@ from datetime import datetime, time
 import sqlite3
 import hashlib
 import smtplib
-import os
 import base64
 from email.mime.text import MIMEText
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime
 import random
 import string
 import warnings
 
-
 # Conectar ao banco de dados SQLite
-conn = sqlite3.connect('reservas.db')
+def conectar_banco():
+    conn = sqlite3.connect('reservas.db')
+    return conn
+
+conn = conectar_banco()
 cursor = conn.cursor()
 
-print("st_aggrid importado com sucesso!")
-
-
-# Suprime especificamente a mensagem de aviso do Streamlit
+# Suprime mensagens de aviso do Streamlit
 warnings.filterwarnings("ignore", message="Please replace st.experimental_get_query_params with st.query_params.")
 
 # Configura a página do Streamlit - ESSA LINHA DEVE SER A PRIMEIRA CHAMADA AO STREAMLIT
 st.set_page_config(layout='wide', page_title="Frota Vilaurbe", page_icon=":car:")
 
-
-
-
 # Função para gerar um token aleatório
 def gerar_token_tamanho_aleatorio(tamanho=20):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=tamanho))
 
-
 # Inicializando variáveis de sessão para controlar o recarregamento
 if 'atualizar_tabela' not in st.session_state:
     st.session_state.atualizar_tabela = False
-
-
 
 # Inicializa o cache de reservas se não existir
 if 'reservas' not in st.session_state:
@@ -50,17 +42,56 @@ if 'reservas' not in st.session_state:
 if 'usuario_logado' not in st.session_state:
     st.session_state.usuario_logado = None
 
+# Certifique-se de que 'pagina' existe no session_state
 if 'pagina' not in st.session_state:
-    st.session_state.pagina = 'login'
+    st.session_state.pagina = 'login'  # ou a página inicial desejada
 
-
-# Inicializa a variável de controle da página atual
-if 'pagina' not in st.session_state:
-    st.session_state.pagina = 'home'
-    
 # Inicializa a variável de controle de nome completo
 if 'nome_completo' not in st.session_state:
     st.session_state.nome_completo = None
+
+# Função de login
+def login():
+    st.subheader('Login')
+
+    # Verifique se o formulário já foi renderizado
+    if 'login_form_rendered' not in st.session_state:
+        st.session_state['login_form_rendered'] = False
+
+    # Somente renderiza o formulário se não foi renderizado antes
+    if not st.session_state['login_form_rendered']:
+        with st.form(key='login_form_unique_1'):  # Garante chave única
+            email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+
+            # Esse botão será disparado tanto com o clique quanto com "Enter"
+            submit_button = st.form_submit_button('Entrar')
+
+        # Depois de renderizado, marque como True para evitar múltiplas execuções
+        st.session_state['login_form_rendered'] = True
+
+        if submit_button:
+            login_efetuado = verificar_usuario(email, senha)
+            if login_efetuado:
+                st.session_state.pagina = 'home'
+                st.success('Login realizado com sucesso!')
+                st.experimental_rerun()  # Recarrega a página para refletir a mudança de estado
+            else:
+                st.error('E-mail ou senha incorretos.')
+                st.session_state['login_form_rendered'] = False  # Permite nova tentativa
+
+# Função para verificar usuário (a ser definida adequadamente)
+def verificar_usuario(email, senha):
+    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+    with conectar_banco() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
+        usuario = cursor.fetchone()
+    if usuario:
+        st.session_state.usuario_logado = usuario[1]
+        st.session_state.nome_completo = usuario[0]
+        return True
+    return False
     
     
 # Função para recuperar a senha
@@ -450,24 +481,7 @@ def adicionar_usuario(nome_completo, email, senha):
     except Exception as e:
         st.error(f'Erro ao adicionar usuário: {e}')
 
-# Função para verificar o usuário
-def verificar_usuario(email, senha):
-    # Verifica se o email tem o domínio correto
-    if not email.endswith('@vilaurbe.com.br'):
-        st.error("Acesso restrito. Apenas colaboradores são permitidos.")
-        return False
-    
-    senha_hash = hashlib.sha256(senha.encode()).hexdigest()
-    with sqlite3.connect('reservas.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
-        usuario = cursor.fetchone()
-        if usuario:
-            st.session_state.usuario_logado = usuario[1]
-            st.session_state.nome_completo = usuario[0]
-            return True
-        else:
-            return False
+
 
 
 
@@ -493,27 +507,6 @@ def atualizar_senha(email, nova_senha):
 
 
 
-
-# Função de login
-def login():
-    st.markdown('', unsafe_allow_html=True)
-    st.subheader('Login')
-
-    # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form',clear_on_submit=True, border=False):
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
-
-        # Esse botão será disparado tanto com o clique quanto com "Enter"
-        submit_button = st.form_submit_button('Entrar')
-
-    if submit_button:
-        if verificar_usuario(email, senha):
-            st.session_state.pagina = 'home'
-            st.success('Login realizado com sucesso!')
-            
-        else:
-            st.error('E-mail ou senha incorretos.')
 
 
   
