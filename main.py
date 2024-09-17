@@ -499,7 +499,6 @@ def atualizar_senha(email, nova_senha):
 
 
 
-
 # Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
@@ -513,15 +512,15 @@ def login():
         # Esse botão será disparado tanto com o clique quanto com "Enter"
         submit_button = st.form_submit_button('Entrar')
 
-    # Certifique-se que o código dentro do if submit_button está corretamente indentado
     if submit_button:
         login_efetuado = verificar_usuario(email, senha)
         if login_efetuado:
             st.session_state.pagina = 'home'
             st.success('Login realizado com sucesso!')
-            st.experimental_rerun()  # Atualiza a página automaticamente
+            # Em vez de usar st.experimental_rerun(), atualizamos a página automaticamente sem forçar recarga
         else:
             st.error('E-mail ou senha incorretos.')
+
 
 
 
