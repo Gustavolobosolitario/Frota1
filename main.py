@@ -516,10 +516,11 @@ def login():
         login_efetuado = verificar_usuario(email, senha)
         if login_efetuado:
             st.session_state.pagina = 'home'
-            st.success('Login realizado com sucesso!')
-            # Em vez de usar st.experimental_rerun(), atualizamos a página automaticamente sem forçar recarga
+            st.experimental_rerun()  # Força a recarga da página para refletir a mudança
         else:
             st.error('E-mail ou senha incorretos.')
+
+
 
 
 
