@@ -500,27 +500,37 @@ def atualizar_senha(email, nova_senha):
 
 
 
+
 # Função de login
 def login():
     st.markdown('', unsafe_allow_html=True)
     st.subheader('Login')
 
-    # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form_unique_1'):  # Assegura que essa chave é única
-        email = st.text_input('E-mail', placeholder='Digite seu e-mail')
-        senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
+    # Verifique se o formulário já foi renderizado
+    if 'login_form_rendered' not in st.session_state:
+        st.session_state['login_form_rendered'] = False
 
-        # Esse botão será disparado tanto com o clique quanto com "Enter"
-        submit_button = st.form_submit_button('Entrar')
+    # Somente renderiza o formulário se não foi renderizado antes
+    if not st.session_state['login_form_rendered']:
+        with st.form(key='login_form_unique_1'):  # Garante chave única
+            email = st.text_input('E-mail', placeholder='Digite seu e-mail')
+            senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
-    if submit_button:
-        login_efetuado = verificar_usuario(email, senha)
-        if login_efetuado:
-            # Altera o estado da página sem forçar recarga
-            st.session_state.pagina = 'home'
-            st.success('Login realizado com sucesso!')
-        else:
-            st.error('E-mail ou senha incorretos.')
+            # Esse botão será disparado tanto com o clique quanto com "Enter"
+            submit_button = st.form_submit_button('Entrar')
+
+        # Depois de renderizado, marque como True para evitar múltiplas execuções
+        st.session_state['login_form_rendered'] = True
+
+        if submit_button:
+            login_efetuado = verificar_usuario(email, senha)
+            if login_efetuado:
+                st.session_state.pagina = 'home'
+                st.success('Login realizado com sucesso!')
+                st.session_state['login_form_rendered'] = False  # Reseta para futuras renderizações
+            else:
+                st.error('E-mail ou senha incorretos.')
+                st.session_state['login_form_rendered'] = False  # Permite nova tentativa
 
 # Controle de páginas baseado no estado da sessão
 if 'pagina' not in st.session_state:
