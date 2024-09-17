@@ -50,9 +50,6 @@ if 'reservas' not in st.session_state:
 if 'usuario_logado' not in st.session_state:
     st.session_state.usuario_logado = None
 
-# Inicializa a variável de controle da página atual (somente uma vez)
-if 'pagina' not in st.session_state:
-    st.session_state.pagina = 'login'  # Começa na página de login
 
 
 
