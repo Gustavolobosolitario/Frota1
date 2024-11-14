@@ -1100,7 +1100,7 @@ def home_page():
             nome_completo = st.session_state.nome_completo
             email_usuario = st.session_state.usuario_logado
             descVeiculo = st.selectbox(label='Carro', key='carro', options=[
-                'SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV'
+                'SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV', 'Mercedes Benz Vito VAN',
             ])
             descDestino = st.multiselect(label='Cidade', key='destino', options=[
                  "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
