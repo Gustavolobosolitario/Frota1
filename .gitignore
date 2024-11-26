@@ -1,0 +1,35 @@
+# Ambiente virtual
+.venv/
+env/
+
+# Cache e arquivos compilados
+__pycache__/
+*.py[cod]
+
+# Arquivos de configuração do sistema
+*.exe
+*.lnk
+*.log
+*.dat
+*.ini
+
+# Arquivos de banco de dados local
+reservas.db
+
+# Diretórios do usuário
+../../../*
+
+# IDEs e editores
+.vscode/
+.idea/
+
+# Arquivos temporários
+*.tmp
+*.swp
+*.swo
+
+# Arquivos de backup
+*.bak
+
+# Arquivos do Streamlit
+.streamlit/
