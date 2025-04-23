@@ -40,7 +40,7 @@ if 'nome_completo' not in st.session_state:
 def carregar_reservas_do_banco():
     """Carrega as reservas do banco de dados com caching para melhorar a performance."""
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             return pd.read_sql_query('SELECT * FROM reservas', conn)
     except Exception as e:
         st.error(f'Erro ao carregar reservas: {e}')
@@ -54,7 +54,7 @@ def limpar_cache():
     st.success("Cache limpo com sucesso!")
     
 # Conectar ao banco de dados SQLite
-conn = sqlite3.connect('reservas.db')
+conn = sqlite3.connect('reservas1.db')
 cursor = conn.cursor()
 
 print("st_aggrid importado com sucesso!")
@@ -70,32 +70,32 @@ def criar_tabelas():
     with sqlite3.connect('reservas1.db') as conn:
         cursor = conn.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (
-                            id INTEGER PRIMARY KEY,
-                            nome_completo TEXT,
-                            email TEXT UNIQUE,
-                            senha TEXT,
-                            token TEXT)''')
+                                    id INTEGER PRIMARY KEY,
+                                    nome_completo TEXT,
+                                    email TEXT UNIQUE,
+                                    senha TEXT,
+                                    token TEXT)''')
         cursor.execute('''CREATE TABLE IF NOT EXISTS reservas (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            nome_completo TEXT,
-                            email_usuario TEXT,
-                            dtRetirada DATE,
-                            hrRetirada TEXT,
-                            dtDevolucao DATE,
-                            hrDevolucao TEXT,
-                            carro TEXT,
-                            cidade TEXT,
-                            km_inicial INTEGER NOT NULL,
-                            km_final INTEGER,
-                            ponto_partida_proxima_viagem INTEGER,
-                            status TEXT)''')
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    nome_completo TEXT,
+                                    email_usuario TEXT,
+                                    dtRetirada DATE,
+                                    hrRetirada TEXT,
+                                    dtDevolucao DATE,
+                                    hrDevolucao TEXT,
+                                    carro TEXT,
+                                    cidade TEXT,
+                                    km_inicial INTEGER NOT NULL,
+                                    km_final INTEGER,
+                                    ponto_partida_proxima_viagem INTEGER,
+                                    status TEXT)''')
         cursor.execute('''CREATE TABLE IF NOT EXISTS tokens (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            email TEXT,
-                            token TEXT,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            FOREIGN KEY (email) REFERENCES usuarios(email)
-                        )''')
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    email TEXT,
+                                    token TEXT,
+                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    FOREIGN KEY (email) REFERENCES usuarios(email)
+                                )''')
         conn.commit()
         
         
@@ -103,7 +103,7 @@ def criar_tabelas():
 def adicionar_usuario(nome_completo, email, senha):
     senha_hash = hashlib.sha256(senha.encode()).hexdigest()
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             cursor = conn.cursor()
             cursor.execute('INSERT INTO usuarios (nome_completo, email, senha) VALUES (?, ?, ?)', 
                            (nome_completo, email, senha_hash))
@@ -121,7 +121,7 @@ def verificar_usuario(email, senha):
         return False
     
     senha_hash = hashlib.sha256(senha.encode()).hexdigest()
-    with sqlite3.connect('reservas.db') as conn:
+    with sqlite3.connect('reservas1.db') as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT nome_completo, email FROM usuarios WHERE email = ? AND senha = ?', (email, senha_hash))
         usuario = cursor.fetchone()
@@ -171,7 +171,7 @@ def resetar_senha():
         st.error("Token inválido ou expirado.")
         return
 
-    with sqlite3.connect('reservas.db') as conn:
+    with sqlite3.connect('reservas1.db') as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT email FROM tokens WHERE token = ?', (token,))
         result = cursor.fetchone()
@@ -199,7 +199,7 @@ def resetar_senha():
 def atualizar_senha_com_token(token, nova_senha):
     senha_hash = hashlib.sha256(nova_senha.encode()).hexdigest()
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             cursor = conn.cursor()
             cursor.execute('''UPDATE usuarios SET senha = ? 
                               WHERE email = (SELECT email FROM tokens WHERE token = ?)''', 
@@ -247,10 +247,10 @@ def visualizar_reservas():
 # Função para carregar reservas do banco de dados
 def carregar_reservas_do_banco():
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             return pd.read_sql_query('SELECT * FROM reservas', conn)
     except Exception as e:
-        st.error(f'Erro ao carregar reservas: {e}')
+        st.error(f'Erro ao carregar reservas1: {e}')
         return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro        
         
         
@@ -308,11 +308,11 @@ def cadastro():
         
         
         
-def registrar_reserva(nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status):
+def registrar_reserva(nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status,km_final):
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             cursor = conn.cursor()
-            cursor.execute('''INSERT INTO reservas (nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status)
+            cursor.execute('''INSERT INTO reservas (nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status,km_final)
                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                            (nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status))
             conn.commit()
@@ -329,13 +329,13 @@ def registrar_reserva(nome_completo, email_usuario, dtRetirada, dtDevolucao, hrR
 
 
 # Função para registrar reservas pelo administrador ou usuário comum
-def registrar_reserva(nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status):
+def registrar_reserva(nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status,km_final):
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             cursor = conn.cursor()
             cursor.execute('''INSERT INTO reservas (nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status)
                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                           (nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status))
+                           (nome_completo, email_usuario, dtRetirada, dtDevolucao, hrRetirada, hrDevolucao, carro, cidade, status, km_final))
             conn.commit()
             
             dados_reserva = f"Nome: {nome_completo}, Email: {email_usuario}, Data Retirada: {dtRetirada}, Data Devolução: {dtDevolucao}, Hora Retirada: {hrRetirada}, Hora Devolução: {hrDevolucao}, Carro: {carro}, Cidade: {cidade}, Status: {status}"
@@ -367,7 +367,7 @@ def criar_reserva_admin():
 # Função para buscar reservas no banco de dados
 def buscar_reservas():
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             query = "SELECT * FROM reservas"
             df_reservas = pd.read_sql_query(query, conn)
         return df_reservas
@@ -401,10 +401,12 @@ def exibir_reservas_interativas():
             'hrDevolucao': 'Hora Devolução',
             'carro': 'Carro',
             'cidade': 'Destino',
-            'status': 'Status'
+            'status': 'Status',
+            'km_inicial': 'km_inicial',
+            
         })
 
-        df_reservas = df_reservas[['id', 'Nome Completo', 'Data Retirada', 'Hora Retirada', 'Data Devolução', 'Hora Devolução', 'Carro', 'Destino', 'Status']]
+        df_reservas = df_reservas[['id', 'Nome Completo', 'Data Retirada', 'Hora Retirada', 'Data Devolução', 'Hora Devolução', 'Carro', 'Destino', 'Status', 'km_inicial','km_final']]
         df_reservas = df_reservas.sort_values(by='id', ascending=False)
 
         gb = GridOptionsBuilder.from_dataframe(df_reservas)
@@ -420,6 +422,8 @@ def exibir_reservas_interativas():
         gb.configure_column("Hora Retirada", width=80)
         gb.configure_column("Data Devolução", width=88)
         gb.configure_column("Hora Devolução", width=80)
+        gb.configure_column("km_inicial", width=80)
+        gb.configure_column("km_final", width=80)
         grid_options = gb.build()
 
         grid_response = AgGrid(df_reservas, gridOptions=grid_options, update_mode=GridUpdateMode.SELECTION_CHANGED, key='reservas_grid')
@@ -458,7 +462,7 @@ def exibir_reservas_interativas():
 def atualizar_senha(email, nova_senha):
     senha_hash = hashlib.sha256(nova_senha.encode()).hexdigest()
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             cursor = conn.cursor()
             cursor.execute('UPDATE usuarios SET senha = ? WHERE email = ?', (senha_hash, email))
             conn.commit()
@@ -482,7 +486,7 @@ def recuperar_senha(email):
 
 def salvar_token_no_banco(email, token):
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             cursor = conn.cursor()
             cursor.execute('''INSERT INTO tokens (email, token) VALUES (?, ?)''', (email, token))
             conn.commit()
@@ -491,7 +495,7 @@ def salvar_token_no_banco(email, token):
         print(f'Erro ao salvar token no banco de dados: {e}')
 
 
-def enviar_notificacao_reserva(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
+def enviar_notificacao_reserva(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos,km_inicial,km_final):
     servidor_smtp = 'smtp.office365.com'
     porta = 587
     remetente = 'ti@vilaurbe.com.br'
@@ -515,6 +519,9 @@ def enviar_notificacao_reserva(email_usuario, dtRetirada, hrRetirada, dtDevoluca
     - Hora de Devolução: {hrDevolucao.strftime('%H:%M')}
     - Veículo: {carro}
     - Destinos: {destinos}
+    - status: Agendado
+    - KM Inicial: {km_inicial}
+    - KM final: {km_final}  
 
     Atenciosamente,
 
@@ -549,14 +556,14 @@ def arredondar_para_intervalo(time_obj, intervalo_mins=30):
 
 
 # Função para adicionar uma nova reserva
-def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos, km_inicial):
+def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos,km_inicial, km_final):
     try:
         destino_str = ', '.join(destinos) if destinos else ''
         if veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
-            with sqlite3.connect('reservas.db') as conn:
+            with sqlite3.connect('reservas1.db') as conn:
                 cursor = conn.cursor()
                 cursor.execute('''INSERT INTO reservas 
-                                  (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, km_inicial, status) 
+                                  (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, km_inicial,km_final, status) 
                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                                (st.session_state.nome_completo, st.session_state.usuario_logado, 
                                 dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
@@ -575,7 +582,7 @@ def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, d
 
 # Função para liberar a vaga quando a reserva é cancelada
 def liberar_vaga(reserva_id):
-    with sqlite3.connect('reservas.db') as conn:
+    with sqlite3.connect('reservas1.db') as conn:
         cursor = conn.cursor()
         cursor.execute('DELETE FROM reservas WHERE id = ?', (reserva_id))
         conn.commit()        
@@ -678,6 +685,9 @@ Data de Devolução: {detalhes_reserva['dtDevolucao']}
 Hora de Devolução: {detalhes_reserva['hrDevolucao']}
 Carro: {detalhes_reserva['carro']}
 Cidade: {detalhes_reserva['cidade']}
+status: {detalhes_reserva['status']}
+km Inicial: {detalhes_reserva['km_inicial']}
+km Final: {detalhes_reserva['km_final']}
 
 Atenciosamente,
 Equipe Frota Vilaurbe
@@ -701,7 +711,7 @@ def atualizar_status_reserva(selected_id):
     selected_id = int(selected_id)
 
     # Conectar ao banco de dados
-    with sqlite3.connect('reservas.db') as conn:
+    with sqlite3.connect('reservas1.db') as conn:
         cursor = conn.cursor()
 
         # Buscar detalhes da reserva ANTES de atualizar o status
@@ -762,11 +772,11 @@ def carregar_reservas_do_csv():
     
 def buscar_todas_reservas_do_banco():
     """
-    Busca todas as reservas do banco de dados SQLite reservas.db.
+    Busca todas as reservas do banco de dados SQLite reservas1.db.
     Retorna um DataFrame com todas as reservas.
     """
     try:
-        conn = sqlite3.connect('reservas.db')
+        conn = sqlite3.connect('reservas1.db')
         query = "SELECT * FROM reservas"  # Supondo que sua tabela de reservas se chama 'reservas'
         df_reservas = pd.read_sql_query(query, conn)
         conn.close()
@@ -786,7 +796,7 @@ def exportar_df_para_csv(df, filename):
     
     
 def verificar_tabelas():
-    with sqlite3.connect('reservas.db') as conn:
+    with sqlite3.connect('reservas1.db') as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cursor.fetchall()
@@ -802,7 +812,7 @@ def verificar_tabelas():
 # Função para registrar o KM final e atualizar o ponto de partida
 def registrar_km_retorno(reserva_id, km_final):
     try:
-        with sqlite3.connect('reservas.db') as conn:
+        with sqlite3.connect('reservas1.db') as conn:
             cursor = conn.cursor()
             cursor.execute("UPDATE reservas SET km_final = ?, ponto_partida_proxima_viagem = ? WHERE id = ?", (km_final, km_final, reserva_id))
             conn.commit()
