@@ -733,15 +733,27 @@ def atualizar_status_reserva(selected_id):
 def exibir_exportar_reservas(df_reservas):
     # Definir o usuário autorizado
     usuario_autorizado = 'analytics@vilaurbe.com.br'  # Substitua pelo e-mail do usuário autorizado
-    
+
     # Verificar se o usuário logado é o autorizado
     if 'usuario_logado' in st.session_state:
         st.write(f"Usuário logado: {st.session_state.usuario_logado}")  # Depuração
         if st.session_state.usuario_logado == usuario_autorizado:
             st.write('### Exportar todas as reservas:')
             exportar_reservas_para_csv(df_reservas)
+        else:
+            st.info("Você não tem permissão para exportar as reservas.")
     else:
-        st.write("Nenhum usuário logado.")    
+        st.write("Nenhum usuário logado.")
+
+def exportar_reservas_para_csv(df):
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="Exportar para CSV",
+        data=csv,
+        file_name='todas_reservas.csv',
+        mime='text/csv',
+        key='exportar_todas_reservas_button'  # Adicionando uma key única
+    )      
     
     
 def verificar_tabelas():
