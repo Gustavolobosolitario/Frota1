@@ -917,7 +917,7 @@ def home_page():
                         st.session_state.retirada_confirmada = False
                         st.session_state.devolucao_confirmada = False
 
-                with st.form(key='buscar_reserva'):
+        with st.form(key='buscar_reserva'):
             st.subheader('Consultar Reservas')
             col1, col2 = st.columns(2)
 
