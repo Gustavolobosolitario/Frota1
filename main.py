@@ -157,13 +157,10 @@ def enviar_email_recovery(destinatario, link):
 def resetar_senha():
     st.title('Redefinir Senha')
 
-    # Correta obtenção dos parâmetros da URL
+    # Obtenção dos parâmetros da URL
     params = st.experimental_get_query_params()
-    st.write(f'Todos os parâmetros da URL: {params}')  # Debug
-
     token = params.get('token', [None])[0]
     token = token.strip() if token else None
-    st.write(f'Token capturado da URL: {token}')  # Debug
 
     if not token:
         st.error("Token inválido ou expirado.")
@@ -173,8 +170,6 @@ def resetar_senha():
         cursor = conn.cursor()
         cursor.execute('SELECT email FROM tokens WHERE token = ?', (token,))
         result = cursor.fetchone()
-
-    st.write(f'Resultado da consulta: {result}')  # Debug
 
     if result:
         email = result[0]
@@ -192,6 +187,7 @@ def resetar_senha():
                     st.info("Agora você pode fazer login com sua nova senha.")
     else:
         st.error("Token inválido ou expirado.")
+
 
         
         
