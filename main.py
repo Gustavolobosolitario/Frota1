@@ -156,42 +156,30 @@ def enviar_email_recovery(destinatario, link):
         
 def resetar_senha():
     st.title('Redefinir Senha')
-    
-    # Capture os parâmetros da URL usando st.query_params
-    params = st.experimental_get_query_params
 
-    
-    # Exiba todos os parâmetros para depuração
-    st.write(f'Todos os parâmetros da URL: {st.experimental_get_query_params}')
-    
-    # Captura o token corretamente da lista
-    token = st.experimental_get_query_params('token', [None])[0]
-    
-    # Remova espaços em branco e verifique o token
+    # Correta obtenção dos parâmetros da URL
+    params = st.experimental_get_query_params()
+    st.write(f'Todos os parâmetros da URL: {params}')  # Debug
+
+    token = params.get('token', [None])[0]
     token = token.strip() if token else None
-    
-    # Verifique o valor do token capturado
-    st.write(f'Token capturado da URL: {token}')
-    
+    st.write(f'Token capturado da URL: {token}')  # Debug
+
     if not token:
         st.error("Token inválido ou expirado.")
         return
-    
-    # Adicione depuração para a consulta SQL
-    st.write(f'Executando consulta com token: {token}')
-    
-    # Busca o email associado ao token
+
     with sqlite3.connect('reservas.db') as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT email FROM tokens WHERE token = ?', (token,))
         result = cursor.fetchone()
-    
-    st.write(f'Resultado da consulta: {result}')
-    
+
+    st.write(f'Resultado da consulta: {result}')  # Debug
+
     if result:
         email = result[0]
         st.text_input("E-mail", value=email, disabled=True)
-        
+
         nova_senha = st.text_input("Nova Senha", type="password", placeholder="Digite sua nova senha")
         confirmar_senha = st.text_input("Confirmar Senha", type="password", placeholder="Confirme sua nova senha")
 
@@ -203,7 +191,8 @@ def resetar_senha():
                     st.success("Senha redefinida com sucesso!")
                     st.info("Agora você pode fazer login com sua nova senha.")
     else:
-        st.error("Token inválido ou expirado.")        
+        st.error("Token inválido ou expirado.")
+
         
         
 def atualizar_senha_com_token(token, nova_senha):
@@ -1158,8 +1147,9 @@ def home_page():
 
 # Exibe a página inicial ou outras páginas
 params = st.experimental_get_query_params()
+token = params.get('token', [None])[0]  # <- Captura correta do token
 
-if 'token' in params:
+if token:
     resetar_senha()
 else:
     if st.session_state.get('pagina') == 'home':
@@ -1169,7 +1159,6 @@ else:
         exibir_reservas_interativas()
         if st.button('Voltar'):
             st.session_state.pagina = 'home'
-            st.query_params(pagina='home')
+            st.query_params(pagina='home')  # <- Este pode ser removido, pois `st.query_params` não existe
     else:
-
         home_page()
