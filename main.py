@@ -917,23 +917,23 @@ def home_page():
                         st.session_state.retirada_confirmada = False
                         st.session_state.devolucao_confirmada = False
 
-        with st.form(key='buscar_reserva'):
+                with st.form(key='buscar_reserva'):
             st.subheader('Consultar Reservas')
             col1, col2 = st.columns(2)
 
             with col1:
-                dtRetirada = st.date_input(label='Data de Retirada', key='dtRetirada_filtro', value=None, format='DD/MM/YYYY')
+                dtRetirada_filtro = st.date_input(label='Data de Retirada', key='dtRetirada_filtro', value=None, format='DD/MM/YYYY')
 
             with col2:
-                dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao_filtro', value=None, format='DD/MM/YYYY')
+                dtDevolucao_filtro = st.date_input(label='Data de Devolução', key='dtDevolucao_filtro', value=None, format='DD/MM/YYYY')
 
             col3, col4 = st.columns(2)
 
             with col3:
-                carro = st.multiselect(label='Carro', key='carro_filtro', options=['SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV'])
+                carro_filtro = st.multiselect(label='Carro', key='carro_filtro', options=['SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV'])
 
             with col4:
-                cidade = st.multiselect(label='Cidade', key='cidade_filtro', options=[ "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
+                cidade_filtro = st.multiselect(label='Cidade', key='cidade_filtro', options=[ "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
     "Agudos", "Alambari", "Alfredo Marcondes", "Altair", "Altinópolis", "Alto Alegre", "Alumínio", "Álvares Florence",
     "Álvares Machado", "Álvaro de Carvalho", "Alvinlândia", "Americana", "Américo Brasiliense", "Américo de Campos",
     "Amparo", "Analândia", "Andradina", "Angatuba", "Anhembi", "Anhumas", "Aparecida", "Aparecida d'Oeste", "Apiaí",
@@ -1014,18 +1014,16 @@ def home_page():
 
             buscar_reserva = st.form_submit_button(label='Buscar Reserva')
 
-            if buscar_reserva:
-                df_reservas = buscar_reservas_filtros(dtRetirada, dtDevolucao, carro, cidade)
-                if df_reservas.empty:
-                    st.error('Nenhuma reserva encontrada.')
-                else:
-                    df_selecao = criar_df_para_visualizacao(df_reservas)
-                    st.dataframe(df_selecao)
-                    st.session_state.df_selecao = df_selecao
-
-                    # Botão para limpar cache - ADD A UNIQUE KEY HERE
-                    if st.button('Recarregar Dados', key='recarregar_dados_consulta'):
-                        limpar_cache()
+        if buscar_reserva:
+            df_reservas = buscar_reservas_filtros(dtRetirada_filtro, dtDevolucao_filtro, carro_filtro, cidade_filtro)
+            if df_reservas.empty:
+                st.error('Nenhuma reserva encontrada.')
+            else:
+                df_selecao = criar_df_para_visualizacao(df_reservas)
+                st.dataframe(df_selecao)
+                st.session_state.df_selecao = df_selecao
+                if st.button('Recarregar Dados', key='recarregar_dados_consulta'):
+                    limpar_cache()
 
         st.title('Todas as Reservas')
         exibir_reservas_interativas()
