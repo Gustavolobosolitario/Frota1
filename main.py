@@ -19,6 +19,22 @@ import warnings
 st.set_page_config(layout='wide', page_title="Frota Vilaurbe", page_icon=":car:")
 warnings.filterwarnings("ignore", message="Please replace st.experimental_get_query_params with st.query_params.")
 
+def adicionar_coluna_km_inicial():
+    try:
+        conn = sqlite3.connect('reservas.db')
+        cursor = conn.cursor()
+        cursor.execute("ALTER TABLE reservas ADD COLUMN km_inicial INTEGER NOT NULL DEFAULT 0")
+        conn.commit()
+        conn.close()
+        print("Coluna 'km_inicial' adicionada com sucesso.")
+    except sqlite3.OperationalError as e:
+        if "duplicate column name" in str(e):
+            print("A coluna 'km_inicial' já existe.")
+        else:
+            print(f"Erro ao adicionar a coluna 'km_inicial': {e}")
+
+# Chame esta função no início do seu aplicativo
+adicionar_coluna_km_inicial()
 
 
 
@@ -97,7 +113,7 @@ def criar_tabelas():
                             FOREIGN KEY (email) REFERENCES usuarios(email)
                         )''')
         conn.commit()
-        
+        conn.close()
         
 # Função para adicionar um novo usuário
 def adicionar_usuario(nome_completo, email, senha):
@@ -818,6 +834,7 @@ def verificar_alerta_manutencao(km_atual):
         return True
     return False   
     
+
 
 def home_page():
     criar_tabelas()
