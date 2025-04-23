@@ -133,7 +133,7 @@ def enviar_email_recovery(destinatario, link):
     servidor_smtp = 'smtp.office365.com'
     porta = 587
     remetente = 'ti@vilaurbe.com.br'
-    senha = 'Vilaurbe2024!'
+    senha = 'V1l@Urb3!!51'
 
     try:
         msg = MIMEMultipart()
