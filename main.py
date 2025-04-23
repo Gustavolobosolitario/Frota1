@@ -617,8 +617,6 @@ def recuperar_senha(email):
     enviar_email_recovery(email, link)
 
 
-    enviar_email_recovery(email, link)
-
 
 def salvar_token_no_banco(email, token):
     try:
