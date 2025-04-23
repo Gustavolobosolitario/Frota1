@@ -20,6 +20,8 @@ st.set_page_config(layout='wide', page_title="Frota Vilaurbe", page_icon=":car:"
 warnings.filterwarnings("ignore", message="Please replace st.experimental_get_query_params with st.query_params.")
 
 
+
+
 # Inicialização de variáveis de sessão
 if 'usuario_logado' not in st.session_state:
     st.session_state.usuario_logado = None
@@ -254,7 +256,7 @@ def logout():
     st.session_state.usuario_logado = None
     st.session_state.pagina = 'login'
     st.success("Você saiu com sucesso")        
-        
+    st.rerun() # Força a atualização da página    
 
 # Função de login
 def login():
@@ -262,7 +264,7 @@ def login():
     st.subheader('Login')
 
     # Usando o form para detectar o "Enter" ou clique
-    with st.form(key='login_form',clear_on_submit=True, border=False):
+    with st.form(key='login_form', border=False):
         email = st.text_input('E-mail', placeholder='Digite seu e-mail')
         senha = st.text_input('Senha', type='password', placeholder='Digite sua senha')
 
@@ -273,9 +275,9 @@ def login():
         if verificar_usuario(email, senha):
             st.session_state.pagina = 'home'
             st.success('Login realizado com sucesso!')
-            
+            st.rerun() # Força a atualização da página
         else:
-            st.error('E-mail ou senha incorretos.')        
+            st.error('E-mail ou senha incorretos.')    
         
         
 # Função de cadastro
@@ -320,37 +322,6 @@ def registrar_reserva(nome_completo, email_usuario, dtRetirada, dtDevolucao, hrR
         print(f"Falha ao registrar reserva: {e}")
         
         
-
-# Função para cancelar a reserva e enviar notificação
-def cancelar_reserva(selected_id):
-    with sqlite3.connect('reservas.db') as conn:
-        cursor = conn.cursor()
-        
-        # Buscar os detalhes da reserva
-        cursor.execute('SELECT email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade FROM reservas WHERE id = ?', (selected_id,))
-        reserva = cursor.fetchone()
-
-        if reserva:
-            email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos = reserva
-
-            # Verificar se o usuário logado é o mesmo que fez a reserva
-            if email_usuario == st.session_state.usuario_logado:
-                
-                # Atualizar o status para "Cancelado"
-                cursor.execute('UPDATE reservas SET status = "Cancelado" WHERE id = ?', (selected_id,))
-                conn.commit()
-
-                # Enviar notificação de cancelamento
-                enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos)
-                st.success('Reserva cancelada com sucesso! Notificação enviada.')
-
-                # Marcar a página para atualização
-                st.session_state.atualizar_tabela = True
-                st.experimental_rerun()  # Atualiza a página automaticamente
-            else:
-                st.error('Você não tem permissão para cancelar esta reserva.')
-        else:
-            st.error('Reserva não encontrada.')
         
 
 
@@ -370,32 +341,7 @@ def registrar_reserva(nome_completo, email_usuario, dtRetirada, dtDevolucao, hrR
     except Exception as e:
         st.error(f"Erro ao registrar reserva: {e}")
 
-# Função para cancelar reservas (Administrador tem permissão para todas)
-def cancelar_reserva(selected_id):
-    with sqlite3.connect('reservas.db') as conn:
-        cursor = conn.cursor()
-        
-        # Buscar detalhes da reserva
-        cursor.execute('SELECT email_usuario, nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade FROM reservas WHERE id = ?', (selected_id,))
-        reserva = cursor.fetchone()
 
-        if reserva:
-            email_usuario, nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade = reserva
-            
-            # Verificar se é administrador ou o próprio dono da reserva
-            if st.session_state.usuario_logado == 'analytics@vilaurbe.com.br' or email_usuario == st.session_state.usuario_logado:
-                # Atualizar o status para "Cancelado"
-                cursor.execute('UPDATE reservas SET status = "Cancelado" WHERE id = ?', (selected_id,))
-                conn.commit()
-
-                # Enviar notificação de cancelamento
-                enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade)
-                st.success('Reserva cancelada com sucesso!')
-                st.experimental_rerun()  # Atualiza a página automaticamente
-            else:
-                st.error('Você não tem permissão para cancelar esta reserva.')
-        else:
-            st.error('Reserva não encontrada.')
 
 # Página de criação de reserva pelo administrador
 def criar_reserva_admin():
@@ -431,93 +377,6 @@ df_reservas = buscar_reservas()
         
         
 
-# Função para enviar notificação de cancelamento por email
-def enviar_notificacao_cancelamento(email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
-    servidor_smtp = 'smtp.office365.com'
-    porta = 587
-    remetente = 'ti@vilaurbe.com.br'
-    senha = 'Vilaurbe2024!'
-    destinatario = 'adm02@vilaurbe.com.br'  # Destinatário da notificação
-
-    # Formatação das datas para o formato DD/MM/YYYY
-    dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
-    dtDevolucao_formatada = dtDevolucao.strftime('%d/%m/%Y')
-
-    assunto = 'Cancelamento de Reserva'
-    corpo = f"""
-    Prezado(a) {email_usuario},
-
-    Informamos que a sua reserva foi cancelada com sucesso. Seguem os detalhes da reserva cancelada:
-
-    - Data de Retirada: {dtRetirada_formatada}
-    - Hora de Retirada: {hrRetirada.strftime('%H:%M')}
-    - Data de Devolução: {dtDevolucao_formatada}
-    - Hora de Devolução: {hrDevolucao.strftime('%H:%M')}
-    - Veículo: {carro}
-    - Destinos: {destinos}
-
-    Atenciosamente,
-
-    Equipe Frota Vilaurbe
-    """
-
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = remetente
-        msg['To'] = destinatario
-        msg['Subject'] = assunto
-
-        msg.attach(MIMEText(corpo, 'plain'))
-
-        with smtplib.SMTP(servidor_smtp, porta) as server:
-            server.starttls()
-            server.login(remetente, senha)
-            server.sendmail(remetente, destinatario, msg.as_string())
-
-        print("Notificação de cancelamento enviada com sucesso!")
-    except Exception as e:
-        print(f"Erro ao enviar notificação de cancelamento: {str(e)}")
-
-
-    # Formatação das datas para o formato DD/MM/YYYY
-    dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
-    dtDevolucao_formatada = dtDevolucao.strftime('%d/%m/%Y')
-
-    assunto = 'Cancelamento de Reserva'
-    corpo = f"""
-    Prezado(a) {email_usuario},
-
-    Informamos que a sua reserva foi cancelada com sucesso. Seguem os detalhes da reserva cancelada:
-
-    - Data de Retirada: {dtRetirada_formatada}
-    - Hora de Retirada: {hrRetirada.strftime('%H:%M')}
-    - Data de Devolução: {dtDevolucao_formatada}
-    - Hora de Devolução: {hrDevolucao.strftime('%H:%M')}
-    - Veículo: {carro}
-    - Destinos: {destinos}
-
-    Atenciosamente,
-
-    Equipe Frota Vilaurbe
-    """
-
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = remetente
-        msg['To'] = destinatario
-        msg['Subject'] = assunto
-
-        msg.attach(MIMEText(corpo, 'plain'))
-
-        with smtplib.SMTP(servidor_smtp, porta) as server:
-            server.starttls()
-            server.login(remetente, senha)
-            server.sendmail(remetente, destinatario, msg.as_string())
-
-        print("Notificação de cancelamento enviada com sucesso!")
-    except Exception as e:
-        print(f"Erro ao enviar notificação de cancelamento: {str(e)}")
-        
         
 # Função para exportar reservas para CSV
 def exportar_reservas_para_csv(df_reservas):
@@ -634,7 +493,7 @@ def enviar_notificacao_reserva(email_usuario, dtRetirada, hrRetirada, dtDevoluca
     porta = 587
     remetente = 'ti@vilaurbe.com.br'
     senha = 'Vilaurbe2024!'
-    destinatario = 'adm02@vilaurbe.com.br'  # Destinatário da notificação
+    destinatario = 'analytics@vilaurbe.com.br'  # Destinatário da notificação
 
     # Formatação das datas para o formato DD/MM/YYYY
     dtRetirada_formatada = dtRetirada.strftime('%d/%m/%Y')
@@ -790,40 +649,90 @@ def veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
     return True    
     
     
-def atualizar_status_reserva(selected_id):
-    
-        # Certifique-se de que o selected_id é um número inteiro
-        selected_id = int(selected_id)
-        
-        # Conectar ao banco de dados para verificar o email associado à reserva
-        with sqlite3.connect('reservas.db') as conn:
-            cursor = conn.cursor()
-            
-            # Buscar o email associado à reserva
-            cursor.execute("SELECT email_usuario FROM reservas WHERE id = ?", (selected_id,))
-            resultado = cursor.fetchone()
+def enviar_email_cancelamento(destinatario, detalhes_reserva):
+    servidor_smtp = 'smtp.office365.com'
+    porta = 587
+    remetente = 'ti@vilaurbe.com.br'
+    senha = 'V1l@Urb3!!51'
 
-            if resultado:
-                email_reserva = resultado[0]
-                
-                # Verificar se o usuário logado é o mesmo que fez a reserva
-                if email_reserva == st.session_state.usuario_logado:
-                    # Atualizar o status da reserva para "Cancelado"
-                    cursor.execute("UPDATE reservas SET status = 'Cancelado' WHERE id = ?", (selected_id,))
-                    conn.commit()
-                    st.success('Reserva cancelada com sucesso!')
-                    
-                    # Marcar para recarregar a tabela
-                    st.session_state.atualizar_tabela = True
-                    st.rerun()
-                else:
-                    st.error('Você não tem permissão para cancelar esta reserva.')    
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = remetente
+        msg['To'] = destinatario
+        msg['Subject'] = 'Notificação de Cancelamento de Reserva'
+
+        corpo_email = f"""
+Prezados,
+
+Informamos que a seguinte reserva foi cancelada:
+
+ID da Reserva: {detalhes_reserva['id']}
+Nome do Usuário: {detalhes_reserva['nome_completo']}
+Email do Usuário: {detalhes_reserva['email_usuario']}
+Data de Retirada: {detalhes_reserva['dtRetirada']}
+Hora de Retirada: {detalhes_reserva['hrRetirada']}
+Data de Devolução: {detalhes_reserva['dtDevolucao']}
+Hora de Devolução: {detalhes_reserva['hrDevolucao']}
+Carro: {detalhes_reserva['carro']}
+Cidade: {detalhes_reserva['cidade']}
+
+Atenciosamente,
+Equipe Frota Vilaurbe
+"""
+        msg.attach(MIMEText(corpo_email, 'plain'))
+
+        with smtplib.SMTP(servidor_smtp, porta) as server:
+            server.starttls()
+            server.login(remetente, senha)
+            server.sendmail(remetente, destinatario, msg.as_string())
+
+        print(f"Notificação de cancelamento enviada para {destinatario}!")
+        st.info(f"Notificação de cancelamento enviada para {destinatario}!") # Feedback visual
+    except Exception as e:
+        print(f'Erro ao enviar email de cancelamento: {e}')
+        st.error(f'Erro ao enviar email de cancelamento: {e}')
+
+def atualizar_status_reserva(selected_id):
+
+    # Certifique-se de que o selected_id é um número inteiro
+    selected_id = int(selected_id)
+
+    # Conectar ao banco de dados
+    with sqlite3.connect('reservas.db') as conn:
+        cursor = conn.cursor()
+
+        # Buscar detalhes da reserva ANTES de atualizar o status
+        cursor.execute("SELECT * FROM reservas WHERE id = ?", (selected_id,))
+        reserva_detalhes = cursor.fetchone()
+        colunas = [column[0] for column in cursor.description]
+        detalhes_reserva_dict = dict(zip(colunas, reserva_detalhes))
+
+        if reserva_detalhes:
+            email_reserva = detalhes_reserva_dict['email_usuario']
+
+            # Verificar se o usuário logado tem permissão para cancelar (pode adaptar sua lógica aqui)
+            if email_reserva == st.session_state.usuario_logado or st.session_state.usuario_logado == 'analytics@vilaurbe.com.br':
+                # Atualizar o status da reserva para "Cancelado"
+                cursor.execute("UPDATE reservas SET status = 'Cancelado' WHERE id = ?", (selected_id,))
+                conn.commit()
+                st.success('Reserva cancelada com sucesso!')
+
+                # Enviar notificação por e-mail para analytics@vilaurbe.com.br
+                enviar_email_cancelamento('analytics@vilaurbe.com.br', detalhes_reserva_dict)
+
+                # Marcar para recarregar a tabela
+                st.session_state.atualizar_tabela = True
+                st.rerun()
+            else:
+                st.error('Você não tem permissão para cancelar esta reserva.')
+        else:
+            st.error('Reserva não encontrada.')
     
     
 # Função para exibir o botão de exportação apenas para o usuário autorizado
 def exibir_exportar_reservas(df_reservas):
     # Definir o usuário autorizado
-    usuario_autorizado = 'adm02@vilaurbe.com.br'  # Substitua pelo e-mail do usuário autorizado
+    usuario_autorizado = 'analytics@vilaurbe.com.br'  # Substitua pelo e-mail do usuário autorizado
     
     # Verificar se o usuário logado é o autorizado
     if 'usuario_logado' in st.session_state:
