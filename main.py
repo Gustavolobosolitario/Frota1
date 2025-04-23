@@ -67,7 +67,7 @@ def gerar_token_tamanho_aleatorio(tamanho=20):
 
 # Função para criar as tabelas no banco de dados
 def criar_tabelas():
-    with sqlite3.connect('reservas.db') as conn:
+    with sqlite3.connect('reservas1.db') as conn:
         cursor = conn.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (
                             id INTEGER PRIMARY KEY,
