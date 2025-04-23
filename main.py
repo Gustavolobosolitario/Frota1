@@ -21,6 +21,7 @@ warnings.filterwarnings("ignore", message="Please replace st.experimental_get_qu
 
 
 
+
 # Inicialização de variáveis de sessão
 if 'usuario_logado' not in st.session_state:
     st.session_state.usuario_logado = None
@@ -818,22 +819,7 @@ def verificar_alerta_manutencao(km_atual):
     return False   
     
     
-def adicionar_coluna_km_inicial():
-    try:
-        conn = sqlite3.connect('reservas.db')
-        cursor = conn.cursor()
-        cursor.execute("ALTER TABLE reservas ADD COLUMN km_inicial INTEGER NOT NULL DEFAULT 0")
-        conn.commit()
-        conn.close()
-        print("Coluna 'km_inicial' adicionada com sucesso.")
-    except sqlite3.OperationalError as e:
-        if "duplicate column name" in str(e):
-            print("A coluna 'km_inicial' já existe.")
-        else:
-            print(f"Erro ao adicionar a coluna 'km_inicial': {e}")
-
-# Chame esta função no início do seu aplicativo
-adicionar_coluna_km_inicial()    
+    
 
 def home_page():
     criar_tabelas()
