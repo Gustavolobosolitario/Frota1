@@ -756,18 +756,15 @@ def verificar_tabelas():
 
 def home_page():
     criar_tabelas()
-    
+
     st.sidebar.image('logo.png', use_column_width=True)
 
     if st.session_state.get('usuario_logado'):
         st.sidebar.header(f'Bem vindo, {st.session_state.nome_completo}')
-        
-        
 
         #Adicionar botão de logout na barra lateral
         if st.sidebar.button('Logout'):
             logout()
-        
 
         with st.container(border=True):
             st.title('Reserva')
@@ -918,15 +915,15 @@ def home_page():
             col1, col2 = st.columns(2)
 
             with col1:
-                dtRetirada = st.date_input(label='Data de Retirada', key='dtRetirada_filtro', value=None, format='DD/MM/YYYY')
+                dtRetirada_filtro = st.date_input(label='Data de Retirada', key='dtRetirada_filtro', value=None, format='DD/MM/YYYY')
 
             with col2:
-                dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao_filtro', value=None, format='DD/MM/YYYY')
+                dtDevolucao_filtro = st.date_input(label='Data de Devolução', key='dtDevolucao_filtro', value=None, format='DD/MM/YYYY')
 
             col3, col4 = st.columns(2)
 
             with col3:
-                carro = st.multiselect(label='Carro', key='carro_filtro', options=['SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV'])
+                carro_filtro = st.multiselect(label='Carro', key='carro_filtro', options=['SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV'])
 
             with col4:
                 cidade = st.multiselect(label='Cidade', key='cidade_filtro', options=[ "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
@@ -1011,7 +1008,7 @@ def home_page():
             buscar_reserva = st.form_submit_button(label='Buscar Reserva')
 
             if buscar_reserva:
-                df_reservas = buscar_reservas_filtros(dtRetirada, dtDevolucao, carro, cidade)
+                df_reservas = buscar_reservas_filtros(dtRetirada_filtro, dtDevolucao_filtro, carro_filtro, cidade_filtro)
                 if df_reservas.empty:
                     st.error('Nenhuma reserva encontrada.')
                 else:
@@ -1019,8 +1016,7 @@ def home_page():
                     st.dataframe(df_selecao)
                     st.session_state.df_selecao = df_selecao
 
-                    # Botão para limpar cache - ADD A UNIQUE KEY HERE
-                    if st.button('Recarregar Dados', key='recarregar_dados_consulta'):
+                    if st.button('Recarregar Dados', key='recarregar_dados_consulta_after_search'): # Unique key
                         limpar_cache()
 
         st.title('Todas as Reservas')
