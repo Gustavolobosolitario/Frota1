@@ -97,7 +97,7 @@ def criar_tabelas():
                             FOREIGN KEY (email) REFERENCES usuarios(email)
                         )''')
         conn.commit()
-        conn.close()
+        
         
 # Função para adicionar um novo usuário
 def adicionar_usuario(nome_completo, email, senha):
@@ -817,8 +817,6 @@ def verificar_alerta_manutencao(km_atual):
         st.warning(f"ALERTA DE MANUTENÇÃO: O veículo atingiu {km_atual} km rodados. Recomenda-se verificar a manutenção.")
         return True
     return False   
-    
-    
     
 
 def home_page():
