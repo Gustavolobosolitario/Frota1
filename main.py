@@ -728,32 +728,34 @@ def atualizar_status_reserva(selected_id):
         else:
             st.error('Reserva não encontrada.')
     
-    
-# Função para exibir o botão de exportação apenas para o usuário autorizado
-def exibir_exportar_reservas(df_reservas):
-    # Definir o usuário autorizado
-    usuario_autorizado = 'analytics@vilaurbe.com.br'  # Substitua pelo e-mail do usuário autorizado
 
-    # Verificar se o usuário logado é o autorizado
+# Função para exibir o botão de exportação apenas para o usuário autorizado
+def exibir_importar_reservas():
+    # Definir o usuário autorizado para importar
+    usuario_autorizado_importar = 'analytics@vilaurbe.com.br'  # Substitua pelo e-mail do admin
+
     if 'usuario_logado' in st.session_state:
-        st.write(f"Usuário logado: {st.session_state.usuario_logado}")  # Depuração
-        if st.session_state.usuario_logado == usuario_autorizado:
-            st.write('### Exportar todas as reservas:')
-            exportar_reservas_para_csv(df_reservas)
+        st.write(f"Usuário logado: {st.session_state.usuario_logado}")  # Debugging
+
+        if st.session_state.usuario_logado == usuario_autorizado_importar:
+            st.write('### Importar reservas de CSV:')
+            carregar_reservas_do_csv()
         else:
-            st.info("Você não tem permissão para exportar as reservas.")
+            st.info("Você não tem permissão para importar reservas.")
     else:
         st.write("Nenhum usuário logado.")
 
-def exportar_reservas_para_csv(df):
-    csv = df.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label="Exportar para CSV",
-        data=csv,
-        file_name='todas_reservas.csv',
-        mime='text/csv',
-        key='exportar_todas_reservas_button'  # Adicionando uma key única
-    )      
+def carregar_reservas_do_csv():
+    uploaded_file = st.file_uploader("Selecione um arquivo CSV para importar", type=["csv"])
+    if uploaded_file is not None:
+        try:
+            df_importado = pd.read_csv(uploaded_file)
+            if st.button("Confirmar Importação", key='confirmar_importacao_button'):
+                # Aqui você chamaria a função para salvar os dados do DataFrame no seu banco de dados
+                st.success("Reservas importadas com sucesso!")
+                st.dataframe(df_importado) # Exibir os dados importados
+        except Exception as e:
+            st.error(f"Erro ao ler o arquivo CSV: {e}")  
     
     
 def verificar_tabelas():
