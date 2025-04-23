@@ -388,7 +388,7 @@ def exportar_reservas_para_csv(df_reservas):
 
 def exibir_reservas_interativas():
     df_reservas = carregar_reservas_do_banco()
-    
+
     if not df_reservas.empty:
         df_reservas = df_reservas.rename(columns={
             'nome_completo': 'Nome Completo',
@@ -420,33 +420,26 @@ def exibir_reservas_interativas():
         grid_options = gb.build()
 
         grid_response = AgGrid(df_reservas, gridOptions=grid_options, update_mode=GridUpdateMode.SELECTION_CHANGED, key='reservas_grid')
-        selected_rows = grid_response.get('selected_rows', [])
+        selected_rows = grid_response.get('selected_rows')
 
-        
-        # Validar se o usuário selecionou um registro:
-        if selected_rows is None:
-            pass
-        else:
-            selected_id = selected_rows.iloc[0,0]
-        
-            
-            
-            btnCancelar = st.button('Cancelar', key='bntCancelar')
-            
-            
-            # Exibir o botão de Cancelar
-            if btnCancelar:
+        btnCancelar = st.button('Cancelar', key='bntCancelar')
+
+        # Validar se o usuário selecionou um registro ANTES de tentar cancelar
+        if btnCancelar:
+            if selected_rows:  # Check if selected_rows is not empty
+                selected_id = selected_rows[0]['id'] # Access 'id' from the dictionary
                 if atualizar_status_reserva(selected_id):
                     st.success('Status da reserva alterado com sucesso')
-                    
                     # Recarregar os dados atualizados
                     df_reservas = carregar_reservas_do_banco()
-                    st.session_state.df_selecao = df_reservas
+                    st.session_state.df_selecao = df_reservas # Consider renaming this session state for clarity
                 else:
                     st.error('Erro ao alterar o status da reserva.')
-                    
+            else:
+                st.warning('Por favor, selecione uma reserva para cancelar.')
+
     else:
-        st.warning('Nenhuma reserva selecionada')    
+        st.warning('Nenhuma reserva encontrada.')  
         
         
         
