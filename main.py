@@ -732,7 +732,7 @@ def atualizar_status_reserva(selected_id):
 # Função para exibir o botão de exportação apenas para o usuário autorizado
 def exibir_importar_reservas():
     # Definir o usuário autorizado para importar
-    usuario_autorizado_importar = 'analytics@vilaurbe.com.br'  # Substitua pelo e-mail do admin
+    usuario_autorizado_importar = 'adm02@vilaurbe.com.br'  # Substitua pelo e-mail do admin
 
     if 'usuario_logado' in st.session_state:
         st.write(f"Usuário logado: {st.session_state.usuario_logado}")  # Debugging
@@ -756,6 +756,32 @@ def carregar_reservas_do_csv():
                 st.dataframe(df_importado) # Exibir os dados importados
         except Exception as e:
             st.error(f"Erro ao ler o arquivo CSV: {e}")  
+    
+def buscar_todas_reservas_do_banco():
+    """
+    Esta função deve buscar todas as reservas de todos os usuários do seu banco de dados.
+    Você precisará implementar a lógica específica para o seu banco de dados aqui.
+    Retorna um DataFrame com todas as reservas.
+    """
+    try:
+        # *** IMPLEMENTE A LÓGICA DE CONEXÃO E CONSULTA AO SEU BANCO DE DADOS AQUI ***
+        # Exemplo genérico (adapte para seu ORM ou biblioteca de banco de dados):
+        # reservas = Reserva.query.all()
+        # df_reservas = pd.DataFrame([r.__dict__ for r in reservas])
+        st.write("Função para buscar todas as reservas do banco de dados chamada.") # Remover após implementar
+        return pd.DataFrame({'Nome Completo': [], 'Data Retirada': [], 'Hora Retirada': [], 'Data Devolução': [], 'Hora Devolução': [], 'Carro': [], 'Destino': [], 'Status': []}) # Retornar um DataFrame vazio como placeholder
+    except Exception as e:
+        st.error(f"Erro ao buscar todas as reservas do banco de dados: {e}")
+        return pd.DataFrame()
+
+def exportar_df_para_csv(df, filename):
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="Baixar CSV",
+        data=csv,
+        file_name=filename,
+        mime='text/csv'
+    )   
     
     
 def verificar_tabelas():
@@ -786,6 +812,22 @@ def home_page():
         #Adicionar botão de logout na barra lateral
         if st.sidebar.button('Logout'):
             logout()
+            
+            
+        # Definir o usuário autorizado para importação
+        usuario_autorizado_exportar_tudo = 'analytics@vilaurbe.com.br'  # Substitua pelo e-mail do admin
+
+        # Exibir o botão de importação apenas para o usuário autorizado
+        # Exibir o botão de exportação total apenas para o usuário autorizado
+        if st.session_state.usuario_logado == usuario_autorizado_exportar_tudo:
+            st.subheader("Exportar Todas as Reservas")
+            if st.button("Exportar Todas as Reservas para CSV", key='exportar_todas_reservas_button'):
+                df_todas_reservas = buscar_todas_reservas_do_banco()
+                if not df_todas_reservas.empty:
+                    exportar_df_para_csv(df_todas_reservas, 'todas_as_reservas.csv')
+                    st.success("Todas as reservas foram exportadas para o arquivo 'todas_as_reservas.csv'.")
+                else:
+                    st.info("Não há reservas para exportar.")
 
         with st.container(border=True):
             st.title('Reserva')
