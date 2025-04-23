@@ -492,7 +492,7 @@ def enviar_notificacao_reserva(email_usuario, dtRetirada, hrRetirada, dtDevoluca
     servidor_smtp = 'smtp.office365.com'
     porta = 587
     remetente = 'ti@vilaurbe.com.br'
-    senha = 'Vilaurbe2024!'
+    senha = 'V1l@Urb3!!51'
     destinatario = 'analytics@vilaurbe.com.br'  # Destinatário da notificação
 
     # Formatação das datas para o formato DD/MM/YYYY
