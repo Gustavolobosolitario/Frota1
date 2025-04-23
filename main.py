@@ -85,6 +85,9 @@ def criar_tabelas():
                             hrDevolucao TEXT,
                             carro TEXT,
                             cidade TEXT,
+                            km_inicial INTEGER NOT NULL,
+                            km_final INTEGER,
+                            ponto_partida_proxima_viagem INTEGER,
                             status TEXT)''')
         cursor.execute('''CREATE TABLE IF NOT EXISTS tokens (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -546,21 +549,21 @@ def arredondar_para_intervalo(time_obj, intervalo_mins=30):
 
 
 # Função para adicionar uma nova reserva
-def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos):
+def adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destinos, km_inicial):
     try:
         destino_str = ', '.join(destinos) if destinos else ''
         if veiculo_disponivel(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro):
             with sqlite3.connect('reservas.db') as conn:
                 cursor = conn.cursor()
                 cursor.execute('''INSERT INTO reservas 
-                                  (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, status) 
+                                  (nome_completo, email_usuario, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, cidade, km_inicial, status) 
                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                                (st.session_state.nome_completo, st.session_state.usuario_logado, 
                                 dtRetirada.strftime('%d/%m/%Y'), hrRetirada.strftime('%H:%M:%S'), 
                                 dtDevolucao.strftime('%d/%m/%Y'), hrDevolucao.strftime('%H:%M:%S'), 
                                 carro, destino_str, 'Agendado'))
                 conn.commit()
-            enviar_notificacao_reserva(st.session_state.nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, destino_str)
+            enviar_notificacao_reserva(st.session_state.nome_completo, dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, carro, km_inicial, destino_str)
             st.success("Reserva realizada com sucesso!")
         else:
             st.error("O veículo já está reservado para o período selecionado.")
@@ -792,11 +795,28 @@ def verificar_tabelas():
         for table_name in [t[0] for t in tables]:
             st.write(f'Colunas da tabela {table_name}:')
             cursor.execute(f"PRAGMA table_info({table_name});")
-            columns = cursor.fetchall()
+            columns = cursor.fetchall() 
             for column in columns:
                 st.write(f'  {column[1]}')    
     
-    
+# Função para registrar o KM final e atualizar o ponto de partida
+def registrar_km_retorno(reserva_id, km_final):
+    try:
+        with sqlite3.connect('reservas.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE reservas SET km_final = ?, ponto_partida_proxima_viagem = ? WHERE id = ?", (km_final, km_final, reserva_id))
+            conn.commit()
+            return True
+    except sqlite3.Error as e:
+        st.error(f"Erro ao registrar KM de retorno: {e}")
+        return False
+
+# Função para verificar alertas de manutenção
+def verificar_alerta_manutencao(km_atual):
+    if km_atual % 10000 == 0 and km_atual > 0:
+        st.warning(f"ALERTA DE MANUTENÇÃO: O veículo atingiu {km_atual} km rodados. Recomenda-se verificar a manutenção.")
+        return True
+    return False   
     
 
 def home_page():
@@ -810,6 +830,15 @@ def home_page():
         #Adicionar botão de logout na barra lateral
         if st.sidebar.button('Logout'):
             logout()
+            
+        with st.sidebar:
+            st.subheader("Registro de KM Final")
+            reserva_id_km = st.number_input("ID da Reserva para registrar KM final:", min_value=1, step=1)
+            km_final = st.number_input("KM Final:", min_value=0)
+            if st.button("Confirmar KM Final"):
+                if registrar_km_retorno(reserva_id_km, km_final):
+                    st.success(f"KM final da reserva {reserva_id_km} registrado com sucesso: {km_final} km.")
+                    verificar_alerta_manutencao(km_final) # Verificar alerta após registrar o KM
             
             
         # Definir o usuário autorizado para importação
@@ -867,7 +896,16 @@ def home_page():
             email_usuario = st.session_state.usuario_logado
             descVeiculo = st.selectbox(label='Carro', key='carro', options=[
                 'SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV', 'Mercedes Benz Vito VAN',
+                'QTD9N13 - Kwid Zen', 'RPL3I18 - Duster Zen', 'OKX5G83 - Onix Plus LT', 'OYY2E14 - Tracker LTZ',
+                'FPM4C15 - Spin Activ7', 'HB20S Vision 1.6', 'KMY0I69 - Creta Action', 'PYT2E19 - Hb20 Vision',
+                'FFN8B14 - Trailblazer Premier', 'PTI9J13 - S10 LTZ', 'FHZ3J17 - Equinox Premier',
+                'EVC2L18 - Cruze LT', 'BWB7D12 - Ranger XLS', 'QYM9F88 - Compass Longitude',
+                'KXS2G16 - Renegade Longitude', 'LOG9J22 - Toro Endurance', 'HFG9E13 - Fastback Audace',
+                'NWK8I57 - Pulse Drive', 'RBR8C19 - Cronos Drive', 'SWB1D23 - Strada Endurance',
+                'QYM2D55 - Commander Limited', 'NWK1A17 - Pulse Audace', 'HFG3D19 - Fastback Limited',
+                'RBR9H28 - Cronos Precision', 'LOG1A89 - Toro Freedom', 'PTI7D29 - S10 High Country'
             ])
+            km_inicial = st.number_input(label='KM Inicial', min_value=0)
             descDestino = st.multiselect(label='Cidade', key='destino', options=[
                  "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
     "Agudos", "Alambari", "Alfredo Marcondes", "Altair", "Altinópolis", "Alto Alegre", "Alumínio", "Álvares Florence",
@@ -965,7 +1003,7 @@ def home_page():
                     elif dtDevolucao < dtRetirada:
                         st.error('A data de devolução não pode ser anterior à data de retirada.')
                     else:
-                        adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, descVeiculo, descDestino)
+                        adicionar_reserva(dtRetirada, hrRetirada, dtDevolucao, hrDevolucao, descVeiculo, descDestino, km_inicial)
                         
                         # Resetar confirmações
                         st.session_state.retirada_confirmada = False
