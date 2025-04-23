@@ -759,19 +759,17 @@ def carregar_reservas_do_csv():
     
 def buscar_todas_reservas_do_banco():
     """
-    Esta função deve buscar todas as reservas de todos os usuários do seu banco de dados.
-    Você precisará implementar a lógica específica para o seu banco de dados aqui.
+    Busca todas as reservas do banco de dados SQLite reservas.db.
     Retorna um DataFrame com todas as reservas.
     """
     try:
-        # *** IMPLEMENTE A LÓGICA DE CONEXÃO E CONSULTA AO SEU BANCO DE DADOS AQUI ***
-        # Exemplo genérico (adapte para seu ORM ou biblioteca de banco de dados):
-        # reservas = Reserva.query.all()
-        # df_reservas = pd.DataFrame([r.__dict__ for r in reservas])
-        st.write("Função para buscar todas as reservas do banco de dados chamada.") # Remover após implementar
-        return pd.DataFrame({'Nome Completo': [], 'Data Retirada': [], 'Hora Retirada': [], 'Data Devolução': [], 'Hora Devolução': [], 'Carro': [], 'Destino': [], 'Status': []}) # Retornar um DataFrame vazio como placeholder
-    except Exception as e:
-        st.error(f"Erro ao buscar todas as reservas do banco de dados: {e}")
+        conn = sqlite3.connect('reservas.db')
+        query = "SELECT * FROM reservas"  # Supondo que sua tabela de reservas se chama 'reservas'
+        df_reservas = pd.read_sql_query(query, conn)
+        conn.close()
+        return df_reservas
+    except sqlite3.Error as e:
+        st.error(f"Erro ao acessar o banco de dados SQLite: {e}")
         return pd.DataFrame()
 
 def exportar_df_para_csv(df, filename):
@@ -781,7 +779,7 @@ def exportar_df_para_csv(df, filename):
         data=csv,
         file_name=filename,
         mime='text/csv'
-    )   
+    )
     
     
 def verificar_tabelas():
