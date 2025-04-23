@@ -1025,9 +1025,9 @@ def home_page():
                     df_selecao = criar_df_para_visualizacao(df_reservas)
                     st.dataframe(df_selecao)
                     st.session_state.df_selecao = df_selecao
-                    
-                    # Botão para limpar cache
-                    if st.button('Recarregar Dados'):
+
+                    # Botão para limpar cache - ADD A UNIQUE KEY HERE
+                    if st.button('Recarregar Dados', key='recarregar_dados_consulta'):
                         limpar_cache()
 
         st.title('Todas as Reservas')
