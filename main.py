@@ -388,7 +388,7 @@ def exportar_reservas_para_csv(df_reservas):
 
 def exibir_reservas_interativas():
     df_reservas = carregar_reservas_do_banco()
-
+    
     if not df_reservas.empty:
         df_reservas = df_reservas.rename(columns={
             'nome_completo': 'Nome Completo',
@@ -420,26 +420,33 @@ def exibir_reservas_interativas():
         grid_options = gb.build()
 
         grid_response = AgGrid(df_reservas, gridOptions=grid_options, update_mode=GridUpdateMode.SELECTION_CHANGED, key='reservas_grid')
-        selected_rows = grid_response.get('selected_rows')
+        selected_rows = grid_response.get('selected_rows', [])
 
-        btnCancelar = st.button('Cancelar', key='bntCancelar')
-
-        # Validar se o usuário selecionou um registro ANTES de tentar cancelar
-        if btnCancelar:
-            if selected_rows:  # Check if selected_rows is not empty
-                selected_id = selected_rows[0]['id'] # Access 'id' from the dictionary
+        
+        # Validar se o usuário selecionou um registro:
+        if selected_rows is None:
+            pass
+        else:
+            selected_id = selected_rows.iloc[0,0]
+        
+            
+            
+            btnCancelar = st.button('Cancelar', key='bntCancelar')
+            
+            
+            # Exibir o botão de Cancelar
+            if btnCancelar:
                 if atualizar_status_reserva(selected_id):
                     st.success('Status da reserva alterado com sucesso')
+                    
                     # Recarregar os dados atualizados
                     df_reservas = carregar_reservas_do_banco()
-                    st.session_state.df_selecao = df_reservas # Consider renaming this session state for clarity
+                    st.session_state.df_selecao = df_reservas
                 else:
                     st.error('Erro ao alterar o status da reserva.')
-            else:
-                st.warning('Por favor, selecione uma reserva para cancelar.')
-
+                    
     else:
-        st.warning('Nenhuma reserva encontrada.')  
+        st.warning('Nenhuma reserva selecionada')    
         
         
         
@@ -915,15 +922,15 @@ def home_page():
             col1, col2 = st.columns(2)
 
             with col1:
-                dtRetirada_filtro = st.date_input(label='Data de Retirada', key='dtRetirada_filtro', value=None, format='DD/MM/YYYY')
+                dtRetirada = st.date_input(label='Data de Retirada', key='dtRetirada_filtro', value=None, format='DD/MM/YYYY')
 
             with col2:
-                dtDevolucao_filtro = st.date_input(label='Data de Devolução', key='dtDevolucao_filtro', value=None, format='DD/MM/YYYY')
+                dtDevolucao = st.date_input(label='Data de Devolução', key='dtDevolucao_filtro', value=None, format='DD/MM/YYYY')
 
             col3, col4 = st.columns(2)
 
             with col3:
-                carro_filtro = st.multiselect(label='Carro', key='carro_filtro', options=['SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV'])
+                carro = st.multiselect(label='Carro', key='carro_filtro', options=['SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV'])
 
             with col4:
                 cidade = st.multiselect(label='Cidade', key='cidade_filtro', options=[ "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
@@ -1008,7 +1015,7 @@ def home_page():
             buscar_reserva = st.form_submit_button(label='Buscar Reserva')
 
             if buscar_reserva:
-                df_reservas = buscar_reservas_filtros(dtRetirada_filtro, dtDevolucao_filtro, carro_filtro, cidade_filtro)
+                df_reservas = buscar_reservas_filtros(dtRetirada, dtDevolucao, carro, cidade)
                 if df_reservas.empty:
                     st.error('Nenhuma reserva encontrada.')
                 else:
@@ -1016,7 +1023,8 @@ def home_page():
                     st.dataframe(df_selecao)
                     st.session_state.df_selecao = df_selecao
 
-                    if st.button('Recarregar Dados', key='recarregar_dados_consulta_after_search'): # Unique key
+                    # Botão para limpar cache - ADD A UNIQUE KEY HERE
+                    if st.button('Recarregar Dados', key='recarregar_dados_consulta'):
                         limpar_cache()
 
         st.title('Todas as Reservas')
