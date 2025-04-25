@@ -865,16 +865,9 @@ def home_page():
             nome_completo = st.session_state.nome_completo
             email_usuario = st.session_state.usuario_logado
             descVeiculo = st.selectbox(label='Carro', key='carro', options=[
-                'SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV', 'Mercedes Benz Vito VAN',
-                'QTD9N13 - Kwid Zen', 'RPL3I18 - Duster Zen', 'OKX5G83 - Onix Plus LT', 'OYY2E14 - Tracker LTZ',
-                'FPM4C15 - Spin Activ7', 'HB20S Vision 1.6', 'KMY0I69 - Creta Action', 'PYT2E19 - Hb20 Vision',
-                'FFN8B14 - Trailblazer Premier', 'PTI9J13 - S10 LTZ', 'FHZ3J17 - Equinox Premier',
-                'EVC2L18 - Cruze LT', 'BWB7D12 - Ranger XLS', 'QYM9F88 - Compass Longitude',
-                'KXS2G16 - Renegade Longitude', 'LOG9J22 - Toro Endurance', 'HFG9E13 - Fastback Audace',
-                'NWK8I57 - Pulse Drive', 'RBR8C19 - Cronos Drive', 'SWB1D23 - Strada Endurance',
-                'QYM2D55 - Commander Limited', 'NWK1A17 - Pulse Audace', 'HFG3D19 - Fastback Limited',
-                'RBR9H28 - Cronos Precision', 'LOG1A89 - Toro Freedom', 'PTI7D29 - S10 High Country'
-            ])
+                'SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'TMG0H05 - Volkswagem Virtus', 'FRF6535 - Mercedes Benz Vito VAN'
+            ]) 
+
             descDestino = st.multiselect(label='Cidade', key='destino', options=[
                  "Adamantina", "Adolfo", "Aguaí", "Águas da Prata", "Águas de Lindóia", "Águas de Santa Bárbara", "Águas de São Pedro",
     "Agudos", "Alambari", "Alfredo Marcondes", "Altair", "Altinópolis", "Alto Alegre", "Alumínio", "Álvares Florence",
@@ -991,15 +984,7 @@ def home_page():
             col3, col4 = st.columns(2)
 
             with col3:
-                carro_filtro = st.multiselect(label='Carro', key='carro_filtro', options=['SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'GEZ5262 - Nissan SV', 'Mercedes Benz Vito VAN',
-                'QTD9N13 - Kwid Zen', 'RPL3I18 - Duster Zen', 'OKX5G83 - Onix Plus LT', 'OYY2E14 - Tracker LTZ',
-                'FPM4C15 - Spin Activ7', 'HB20S Vision 1.6', 'KMY0I69 - Creta Action', 'PYT2E19 - Hb20 Vision',
-                'FFN8B14 - Trailblazer Premier', 'PTI9J13 - S10 LTZ', 'FHZ3J17 - Equinox Premier',
-                'EVC2L18 - Cruze LT', 'BWB7D12 - Ranger XLS', 'QYM9F88 - Compass Longitude',
-                'KXS2G16 - Renegade Longitude', 'LOG9J22 - Toro Endurance', 'HFG9E13 - Fastback Audace',
-                'NWK8I57 - Pulse Drive', 'RBR8C19 - Cronos Drive', 'SWB1D23 - Strada Endurance',
-                'QYM2D55 - Commander Limited', 'NWK1A17 - Pulse Audace', 'HFG3D19 - Fastback Limited',
-                'RBR9H28 - Cronos Precision', 'LOG1A89 - Toro Freedom', 'PTI7D29 - S10 High Country'
+                carro_filtro = st.multiselect(label='Carro', key='carro_filtro', options=['SWQ1F92 - Versa Advance', 'SVO6A16 - Saveiro', 'TMG0H05 - Volkswagem Virtus', 'FRF6535 - Mercedes Benz Vito VAN'
             ])
 
             with col4:
