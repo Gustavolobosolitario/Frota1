@@ -21,7 +21,6 @@ warnings.filterwarnings("ignore", message="Please replace st.experimental_get_qu
 
 
 
-
 # Inicialização de variáveis de sessão
 if 'usuario_logado' not in st.session_state:
     st.session_state.usuario_logado = None
